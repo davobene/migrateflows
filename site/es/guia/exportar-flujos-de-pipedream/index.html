@@ -34,6 +34,9 @@ h3{font-size:1.05rem;margin:22px 0 6px}
 p{margin:0 0 12px} ul,ol{padding-left:22px;margin:0 0 12px} li{margin-bottom:6px}
 code,.mono{font-family:var(--f-mono);font-size:.88em}
 code{background:var(--sunk);padding:1px 5px;border-radius:4px}
+pre{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;margin:0 0 8px;font-size:13px;line-height:1.5}
+pre code{background:none;padding:0;font-size:inherit}
+.copy{font:600 13px var(--f-body);background:var(--accent);color:var(--bg);border:0;border-radius:6px;padding:7px 12px;cursor:pointer;margin:0 0 16px}
 .eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
 .answer{background:var(--accent-soft);border-left:3px solid var(--accent);padding:14px 18px;border-radius:0 8px 8px 0;margin:0 0 8px}
 .answer p{margin:0}
@@ -84,7 +87,7 @@ thead th{border-top:0;font-family:var(--f-mono);font-size:11.5px;letter-spacing:
   <li><strong>Trae:</strong> los pasos de cada flujo (pasos de código y acciones prearmadas), los props que configuraste, los disparadores cuando vienen, y los IDs elegidos con su nombre (por ejemplo un sitio de SharePoint o el nombre de una planilla de Google).</li>
   <li><strong>Borra:</strong> los valores secretos, las credenciales de las cuentas conectadas y los tokens de OAuth. Cada paso de app conserva un <code>authProvisionId</code>, que te dice qué cuenta usaba.</li>
   <li><strong>No borra:</strong> los datos de prueba guardados en los pasos de código. Revisalos antes de compartir un ZIP con alguien.</li>
-  <li><strong>No trae:</strong> data stores, archivos del File Store, variables de entorno ni el historial de eventos. Bajalos o copialos aparte.</li>
+  <li><strong>No trae:</strong> data stores, archivos del File Store, variables de entorno ni el historial de eventos. Bajalos o copialos aparte; para los data stores hay un <a href="/es/guia/exportar-data-stores-de-pipedream/">exportador que solo lee</a>.</li>
 </ul>
 
 <div class="cta"><span>¿Ya exportaste? Convertilo a n8n en tu navegador, no se sube nada.</span><a class="btn" href="/">Convertir mis flujos</a></div>

@@ -34,6 +34,8 @@ Everything runs in the browser: your export never leaves your computer. This rep
 
 Every conversion comes with a checklist of what is left to do by hand (credentials to reconnect, variables to create).
 
+**Pipedream data stores** are not in the official export and are deleted on April 30, 2027. [`src/pipedream-datastore-exporter.mjs`](src/pipedream-datastore-exporter.mjs) is a read-only Pipedream code step that downloads every record as a `.datastore.json` file; drop it next to your export and the converted n8n workflows come preloaded with the data. Step-by-step: [migrateflows.com/guide/export-pipedream-data-stores](https://migrateflows.com/guide/export-pipedream-data-stores/).
+
 ## How it was tested
 
 - Agent Builder: 196 real exports people published on GitHub → 196 workflows (437 agents). All pass n8n's own workflow validator and import.

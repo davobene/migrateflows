@@ -34,6 +34,8 @@ Todo corre en el navegador: tu export nunca sale de tu computadora. Este repo ti
 
 Cada conversión trae una lista de lo que queda por hacer a mano (cuentas para reconectar, variables para crear).
 
+**Los data stores de Pipedream** no vienen en el export oficial y se borran el 30 de abril de 2027. [`src/pipedream-datastore-exporter.mjs`](src/pipedream-datastore-exporter.mjs) es un paso de código de Pipedream que solo lee y baja todos los registros en un archivo `.datastore.json`; soltalo junto con tu export y los flujos de n8n convertidos vienen con los datos precargados. Paso a paso: [migrateflows.com/es/guia/exportar-data-stores-de-pipedream](https://migrateflows.com/es/guia/exportar-data-stores-de-pipedream/).
+
 ## Cómo se probó
 
 - Agent Builder: 196 exports reales que la gente publicó en GitHub → 196 flujos (437 agentes). Todos pasan el validador oficial de flujos de n8n e importan.

@@ -34,6 +34,9 @@ h3{font-size:1.05rem;margin:22px 0 6px}
 p{margin:0 0 12px} ul,ol{padding-left:22px;margin:0 0 12px} li{margin-bottom:6px}
 code,.mono{font-family:var(--f-mono);font-size:.88em}
 code{background:var(--sunk);padding:1px 5px;border-radius:4px}
+pre{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;margin:0 0 8px;font-size:13px;line-height:1.5}
+pre code{background:none;padding:0;font-size:inherit}
+.copy{font:600 13px var(--f-body);background:var(--accent);color:var(--bg);border:0;border-radius:6px;padding:7px 12px;cursor:pointer;margin:0 0 16px}
 .eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
 .answer{background:var(--accent-soft);border-left:3px solid var(--accent);padding:14px 18px;border-radius:0 8px 8px 0;margin:0 0 8px}
 .answer p{margin:0}
@@ -87,7 +90,7 @@ thead th{border-top:0;font-family:var(--f-mono);font-size:11.5px;letter-spacing:
 <h2>Whatever you pick, before March 31</h2>
 <ul>
   <li>Export every project now. The export works one project at a time and skips workflows that were never deployed. See <a href="/guide/export-pipedream-workflows/">how to export your Pipedream workflows</a>.</li>
-  <li>Download your data stores and File Store files and copy your environment variables: the export doesn't include them.</li>
+  <li>Download your data stores (<a href="/guide/export-pipedream-data-stores/">read-only exporter</a>) and File Store files, and copy your environment variables: the export doesn't include them.</li>
   <li>List which apps each workflow connects to, so you can reconnect those accounts in the new tool.</li>
   <li>Plan the webhook switch: every service that calls a Pipedream URL needs the new one.</li>
 </ul>

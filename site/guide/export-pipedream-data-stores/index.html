@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>How to export Pipedream data stores before April 30, 2027</title>
+<meta name="description" content="The Pipedream export doesn't include data stores. A read-only code step that downloads every record as a file, and how to load it into n8n.">
+<link rel="canonical" href="https://migrateflows.com/guide/export-pipedream-data-stores/"><link rel="alternate" hreflang="en" href="https://migrateflows.com/guide/export-pipedream-data-stores/"><link rel="alternate" hreflang="es" href="https://migrateflows.com/es/guia/exportar-data-stores-de-pipedream/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="How to export Pipedream data stores before April 30, 2027">
+<meta property="og:description" content="The Pipedream export doesn't include data stores. A read-only code step that downloads every record as a file, and how to load it into n8n.">
+<meta property="og:url" content="https://migrateflows.com/guide/export-pipedream-data-stores/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@700;800&family=Public+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+:root{--bg:#f3f4ef;--surface:#fff;--sunk:#e9ebe3;--ink:#15181d;--muted:#5b616b;--line:#d6d9cf;--accent:#0d6b62;--accent-soft:#dcefeb;
+--f-display:"Schibsted Grotesk","Segoe UI",system-ui,sans-serif;--f-body:"Public Sans","Segoe UI",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme: dark){:root{--bg:#101316;--surface:#171b1f;--sunk:#1e2328;--ink:#e7e9e3;--muted:#9aa1aa;--line:#2a3036;--accent:#45b5a6;--accent-soft:#16302c;color-scheme:dark}}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65}
+.wrap{max-width:760px;margin:0 auto;padding-inline:20px;padding-block:24px 72px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:36px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.1rem;display:flex;gap:10px;align-items:center;color:var(--ink);text-decoration:none}
+.brand svg{width:24px;height:24px}
+.top nav{display:flex;gap:16px;font-size:14px}
+a{color:var(--accent)}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;letter-spacing:-0.01em}
+h1{font-size:clamp(1.9rem,5vw,2.6rem);margin:6px 0 20px}
+h2{font-size:1.4rem;margin:40px 0 12px}
+h3{font-size:1.05rem;margin:22px 0 6px}
+p{margin:0 0 12px} ul,ol{padding-left:22px;margin:0 0 12px} li{margin-bottom:6px}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+code{background:var(--sunk);padding:1px 5px;border-radius:4px}
+pre{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;margin:0 0 8px;font-size:13px;line-height:1.5}
+pre code{background:none;padding:0;font-size:inherit}
+.copy{font:600 13px var(--f-body);background:var(--accent);color:var(--bg);border:0;border-radius:6px;padding:7px 12px;cursor:pointer;margin:0 0 16px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.answer{background:var(--accent-soft);border-left:3px solid var(--accent);padding:14px 18px;border-radius:0 8px 8px 0;margin:0 0 8px}
+.answer p{margin:0}
+.table{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:0 0 12px}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+thead th{border-top:0;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cta{margin:36px 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.cta a.btn{background:var(--accent);color:var(--bg);text-decoration:none;font-weight:600;padding:10px 16px;border-radius:8px}
+.small{font-size:13.5px} .muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><a class="brand" href="/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><rect x="1" y="5" width="10" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="15" y="5" width="10" height="16" rx="2.5" fill="#0d6b62"/><path d="M8 13h10m-3-3 3 3-3 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>MigrateFlows</a><nav><a href="/">Converter</a><a href="/es/guia/exportar-data-stores-de-pipedream/" hreflang="es">Español</a></nav></div>
+<article>
+<p class="eyebrow">Guide · updated October 2026</p>
+<h1>How to export your Pipedream data stores before April 30, 2027</h1>
+
+<div class="answer">
+  <p><strong>Short answer.</strong> Pipedream's workflow export does <strong>not</strong> include data stores, and all Workflows data is deleted on <strong>April 30, 2027</strong>. Paste the read-only code step below into a Pipedream workflow and it downloads every record of a data store as a <code>.datastore.json</code> file. Drop that file next to your export in MigrateFlows and your n8n workflows come with the data already loaded.</p>
+</div>
+
+<h2>Step by step</h2>
+<ol>
+  <li>In Pipedream, create a new workflow with an <strong>HTTP / Webhook</strong> trigger.</li>
+  <li>In the trigger settings, set <strong>HTTP Response</strong> to <strong>Return a custom response from your workflow</strong>.</li>
+  <li>Add a <strong>Node.js</strong> code step and paste the code below.</li>
+  <li>In the step, pick your <strong>data store</strong>, type its <strong>name</strong> exactly as it appears in Pipedream → Data Stores, and choose an <strong>access key</strong> (any password).</li>
+  <li><strong>Deploy</strong>, then open the trigger URL in your browser adding <code>?key=</code> and your access key. The file downloads.</li>
+  <li>Repeat for each data store: change the selection and the name, deploy, open the URL again. When you're done, delete the workflow.</li>
+</ol>
+
+<h2>The code</h2>
+<button class="copy" type="button" onclick="navigator.clipboard.writeText(document.getElementById('exporter').innerText).then(() => { this.textContent = 'Copied'; })">Copy code</button>
+<pre><code id="exporter">// MigrateFlows data store exporter for Pipedream. Read-only: it never changes or deletes your records.
+// 1. Create a workflow with an HTTP trigger and set its HTTP Response to &quot;Return a custom response from your workflow&quot;.
+// 2. Add a Node.js code step, paste this code, pick your data store, type its name and choose an access key.
+// 3. Deploy, then open the trigger URL with ?key=YOUR_ACCESS_KEY in your browser: the file downloads.
+// 4. Repeat for each data store (change the selection and the name), then delete the workflow.
+export default defineComponent({
+  props: {
+    dataStore: { type: &quot;data_store&quot; },
+    storeName: {
+      type: &quot;string&quot;,
+      label: &quot;Data store name&quot;,
+      description: &quot;Exactly as it appears in Pipedream → Data Stores&quot;,
+    },
+    accessKey: {
+      type: &quot;string&quot;,
+      label: &quot;Access key&quot;,
+      description: &quot;Any password you choose. Open the trigger URL with ?key=&lt;this value&gt;&quot;,
+    },
+  },
+  async run({ steps, $ }) {
+    const query = (steps.trigger &amp;&amp; steps.trigger.event &amp;&amp; steps.trigger.event.query) || {};
+    if (query.key !== this.accessKey) {
+      await $.respond({ status: 403, body: &quot;Wrong or missing ?key=&quot; });
+      return $.flow.exit(&quot;wrong access key&quot;);
+    }
+    const records = {};
+    let count = 0;
+    for await (const [key, value] of this.dataStore) {
+      records[key] = value;
+      count++;
+    }
+    const file = {
+      migrateflows: &quot;pipedream-data-store&quot;,
+      version: 1,
+      name: this.storeName,
+      exportedAt: new Date().toISOString(),
+      count,
+      records,
+    };
+    const filename = `${String(this.storeName).replace(/[^\w.-]+/g, &quot;_&quot;)}.datastore.json`;
+    await $.respond({
+      status: 200,
+      headers: {
+        &quot;Content-Type&quot;: &quot;application/json&quot;,
+        &quot;Content-Disposition&quot;: `attachment; filename=&quot;${filename}&quot;`,
+      },
+      body: JSON.stringify(file, null, 2),
+    });
+    return { name: this.storeName, count };
+  },
+});</code></pre>
+<p class="small muted">Also on GitHub: <a href="https://github.com/davobene/migrateflows">davobene/migrateflows</a>.</p>
+
+<h2>Good to know</h2>
+<ul>
+  <li><strong>It only reads.</strong> It never changes or deletes records. (The export example in Pipedream's docs deletes each key after sending it, so be careful with that one.)</li>
+  <li><strong>The access key protects the URL.</strong> Without <code>?key=</code> it answers 403. Delete the workflow when you finish.</li>
+  <li><strong>Big data stores:</strong> if the step times out, raise the workflow's memory and timeout in its Settings (Pipedream suggests 512 MB and 60 seconds as a starting point).</li>
+  <li><strong>What's kept:</strong> every key and its JSON value. Expiration times (TTL) are not.</li>
+</ul>
+
+<div class="cta"><span>Got your export and your data store files? Convert them together.</span><a class="btn" href="/">Convert my workflows</a></div>
+
+<h2>How the data lands in n8n</h2>
+<p>MigrateFlows turns data store steps (both the pre-built actions and <code>this.dataStore</code> in code steps) into n8n workflow static data, and preloads it from your <code>.datastore.json</code> file the first time the workflow runs. Two differences from Pipedream to keep in mind:</p>
+<ul>
+  <li>Each n8n workflow keeps its own copy. If several workflows shared one data store, changes in one won't show in the others.</li>
+  <li>n8n saves static data only on production runs (an active workflow triggered for real), not on manual test runs.</li>
+</ul>
+<p>For data that many workflows share or that grows a lot, move it to a database (Postgres, Supabase, Airtable) and point the workflows there. The <code>.datastore.json</code> file is plain JSON (<code>records</code> maps each key to its value), so you can load it anywhere.</p>
+
+<p>More: <a href="/guide/export-pipedream-workflows/">how to export your Pipedream workflows</a> · <a href="/guide/pipedream-to-n8n/">migration guide to n8n</a>.</p>
+</article>
+
+</div>
+</body>
+</html>

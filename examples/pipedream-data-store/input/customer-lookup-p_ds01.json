@@ -1,0 +1,58 @@
+{
+ "schema": "workflow.json/2026.01",
+ "name": "Customer lookup",
+ "triggers": [],
+ "steps": [
+  {
+   "namespace": "lookup",
+   "type": "CodeCell",
+   "lang": "nodejs20.x",
+   "uses": {
+    "registry": false,
+    "code": "export default defineComponent({\n  props: { customers: { type: \"data_store\" } },\n  async run({ steps, $ }) {\n    const ana = await this.customers.get(\"ana@example.com\");\n    let n = 0;\n    for await (const [k] of this.customers) n++;\n    await this.customers.set(\"visits\", 1);\n    return { ana, n };\n  },\n});"
+   },
+   "props": {
+    "customers": {
+     "__lv": {
+      "label": "customers list",
+      "value": "ds_abc"
+     }
+    }
+   }
+  },
+  {
+   "namespace": "get_bob",
+   "type": "CodeCell",
+   "uses": {
+    "key": "data_stores-get-record",
+    "registry": true
+   },
+   "props": {
+    "dataStore": {
+     "__lv": {
+      "label": "customers list",
+      "value": "ds_abc"
+     }
+    },
+    "key": "bob@example.com"
+   }
+  },
+  {
+   "namespace": "get_visits",
+   "type": "CodeCell",
+   "uses": {
+    "key": "data_stores-get-record",
+    "registry": true
+   },
+   "props": {
+    "dataStore": {
+     "__lv": {
+      "label": "customers list",
+      "value": "ds_abc"
+     }
+    },
+    "key": "visits"
+   }
+  }
+ ]
+}

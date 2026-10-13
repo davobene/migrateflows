@@ -121,6 +121,12 @@
       `paso ${ns}: importa ${m}, que no vino en los archivos`],
     dataStore: (ns, s) => [`step ${ns}: data store '${s}' now uses the n8n workflow's static data (persists only in production executions and is not shared across workflows)`,
       `paso ${ns}: el data store '${s}' pasó al almacenamiento interno del flujo de n8n (solo persiste en ejecuciones de producción y no se comparte entre flujos)`],
+    dataStoreSeeded: (ns, s, n) => [`step ${ns}: data store '${s}' comes preloaded with ${n} records from your data store file`,
+      `paso ${ns}: el data store '${s}' viene precargado con ${n} registros de tu archivo de data store`],
+    dataStoreNoSeed: (s) => [`data store '${s}': its records are not in the Pipedream export; download them with the data store exporter (https://migrateflows.com/guide/export-pipedream-data-stores/) and add the file to preload them`,
+      `data store '${s}': sus registros no vienen en el export de Pipedream; bajalos con el exportador de data stores (https://migrateflows.com/es/guia/exportar-data-stores-de-pipedream/) y agregá el archivo para precargarlos`],
+    dataStoreBig: (s, mb) => [`data store '${s}' is large (${mb} MB) and is stored inside the workflow; for big stores consider an external database`,
+      `el data store '${s}' es grande (${mb} MB) y queda guardado dentro del flujo; para data stores grandes conviene una base de datos externa`],
     flowDelay: (ns) => [`step ${ns}: uses $.flow.delay; replace it with a Wait node`, `paso ${ns}: usa $.flow.delay; reemplazarlo por un nodo Wait`],
     flowRerun: (ns) => [`step ${ns}: uses $.flow.rerun, which has no direct n8n equivalent`, `paso ${ns}: usa $.flow.rerun, que no tiene equivalente directo en n8n`],
     send: (ns) => [`step ${ns}: uses $.send (email/http/s3); replace it with the matching n8n node`, `paso ${ns}: usa $.send (email/http/s3); reemplazarlo por el nodo de n8n que corresponda`],
@@ -170,6 +176,27 @@
     return v;
   };
   const lvLabel = (v) => (v && typeof v === "object" && v.__lv && typeof v.__lv === "object" ? v.__lv.label : undefined);
+
+  // Data store files made by the MigrateFlows exporter ({migrateflows: "pipedream-data-store", name, records}).
+  function readSeeds(files) {
+    const seeds = {};
+    for (const path of Object.keys(files)) {
+      if (!path.endsWith(".json")) continue;
+      let d;
+      try { d = JSON.parse(files[path]); } catch (e) { continue; }
+      if (d && d.migrateflows === "pipedream-data-store" && d.name && d.records && typeof d.records === "object") seeds[d.name] = d.records;
+    }
+    return seeds;
+  }
+  const seedJs = (ctx, name) => (ctx.seeds && ctx.seeds[name] ? J(ctx.seeds[name]) : "null");
+  function noteSeed(ctx, ns, name) {
+    const seed = ctx.seeds && ctx.seeds[name];
+    const R = ctx.report;
+    if (!seed) { const m = M.dataStoreNoSeed(name); if (!R.manual.some((x) => x[0] === m[0])) R.manual.push(m); return; }
+    R.review.push(M.dataStoreSeeded(ns, name, Object.keys(seed).length));
+    const mb = J(seed).length / 1e6;
+    if (mb > 1) R.review.push(M.dataStoreBig(name, mb.toFixed(1)));
+  }
 
   // A prop value -> JS source for use inside {{ }} (strings with {{ }} become template literals).
   function valueToJs(v, ctx) {
@@ -303,7 +330,9 @@ const __app = (name) => ({ $auth: new Proxy({}, { get: (_, f) => __secret(\`\${n
     for (const [, a, f] of src.matchAll(/this\.(\w+)\.\$auth\.(\w+)/g)) R.vars.add(`${a.toUpperCase()}_${f.toUpperCase()}  (this.${a}.$auth.${f})`);
     for (const [, a] of src.matchAll(/(\w+)\s*:\s*\{\s*type:\s*['"]app['"]/g)) apps.add(a);
     const stores = [...src.matchAll(/(\w+)\s*:\s*\{\s*type:\s*['"]data_store['"]/g)].map((m) => m[1]);
-    for (const s of stores) { apps.delete(s); R.manual.push(M.dataStore(step.ns, s)); }
+    // Static data is keyed by the store's name (its label) when the file has it, so code steps and actions share it.
+    const storeKey = (s) => lvLabel(step.props[s]) || s;
+    for (const s of stores) { apps.delete(s); R.manual.push(M.dataStore(step.ns, storeKey(s))); noteSeed(ctx, step.ns, storeKey(s)); }
     for (const m of npm) R.npm.add(m);
     if (src.includes("$.flow.delay")) R.manual.push(M.flowDelay(step.ns));
     if (src.includes("$.flow.rerun")) R.manual.push(M.flowRerun(step.ns));
@@ -330,14 +359,15 @@ const __app = (name) => ({ $auth: new Proxy({}, { get: (_, f) => __secret(\`\${n
 });
 `;
     const code = `// Converted from Pipedream step "${step.ns}" by pdmigra.
-${HELPERS}${shims}const __store = (name) => {
+${HELPERS}${shims}const __store = (name, seed) => {
   const sd = $getWorkflowStaticData('global');
-  sd[name] = sd[name] || {};
+  sd[name] = sd[name] || seed || {};
   const m = sd[name];
   return { get: async (k) => m[k], set: async (k, v) => { m[k] = v; }, has: async (k) => k in m,
     delete: async (k) => { delete m[k]; }, keys: async () => Object.keys(m),
     entries: async () => Object.entries(m).map(([key, value]) => ({ key, value })),
-    clear: async () => { for (const k of Object.keys(m)) delete m[k]; } };
+    clear: async () => { for (const k of Object.keys(m)) delete m[k]; }, setTtl: async () => {},
+    [Symbol.asyncIterator]: async function* () { for (const e of Object.entries(m)) yield e; } };
 };
 // ---- original code (imports adapted) ----
 ${body.trim()}
@@ -356,7 +386,7 @@ const __pd = {
 };
 const __ctx = ${props};
 ${[...apps].map((a) => `if (__ctx[${J(a)}] === undefined) __ctx[${J(a)}] = __app(${J(a)});`).join("\n")}
-${stores.map((s) => `__ctx[${J(s)}] = __store(${J(s)});`).join("\n")}
+${stores.map((s) => `__ctx[${J(s)}] = __store(${J(storeKey(s))}, ${seedJs(ctx, storeKey(s))});`).join("\n")}
 let __ret;
 try {
   __ret = await __component.run.call(__ctx, { steps, $: __pd });
@@ -712,12 +742,13 @@ return [{ json: { raw } }];` }, type: "n8n-nodes-base.code", typeVersion: 2 },
     ACTIONS[k] = (s, c) => {
       const name = lvLabel(s.props.dataStore) || (lv(s.props.dataStore) && typeof lv(s.props.dataStore) === "string" ? lv(s.props.dataStore) : "data_store");
       c.report.manual.push(M.dataStore(s.ns, name));
+      noteSeed(c, s.ns, String(name));
       const props = { ...s.props }; delete props.dataStore;
       return { parameters: { jsCode: `// Pipedream data store action "${k}" re-implemented on n8n static data. pdmigra.
 ${HELPERS}${stepsObjectJs(c.prev)}
 const P = ${propsToJs(props, new Set(), c)};
 const sd = $getWorkflowStaticData('global');
-sd[${J(String(name))}] = sd[${J(String(name))}] || {};
+sd[${J(String(name))}] = sd[${J(String(name))}] || ${seedJs(c, String(name))};
 const m = sd[${J(String(name))}];
 const key = P.key; let value = P.value;
 if (typeof value === 'string') { try { value = JSON.parse(value); } catch (e) {} }
@@ -783,9 +814,9 @@ return [{ json: { timestamp: Math.floor(now.getTime() / 1000), interval_seconds:
 
   // ------------------------------------------------------------------ whole workflow
 
-  function convertWorkflow(wf, files) {
+  function convertWorkflow(wf, files, seeds) {
     const report = newReport();
-    const ctx = { report, files, kinds: {}, prev: [] };
+    const ctx = { report, files, kinds: {}, prev: [], seeds };
     const body = [];
     let ok = 0, respondsAt = null;
     for (const step of wf.steps) {
@@ -850,7 +881,8 @@ return [{ json: { timestamp: Math.floor(now.getTime() / 1000), interval_seconds:
     // An upload can mix both formats (a GitHub Sync repo plus exported JSON files).
     const wfs = (isSync ? readGithubSync(files, yamlLoad) : []).concat(readExport(files));
     const exported = wfs.length - (isSync ? readGithubSync(files, yamlLoad).length : 0);
-    const workflows = wfs.map((w) => convertWorkflow(w, files));
+    const seeds = readSeeds(files);
+    const workflows = wfs.map((w) => convertWorkflow(w, files, seeds));
     const cov = workflows.length ? workflows.reduce((a, w) => a + w.coverage, 0) / workflows.length : 0;
     const format = isSync && exported ? "mixed" : isSync ? "github-sync" : "export";
     return { workflows, summary: { format, count: workflows.length, coverage: cov,

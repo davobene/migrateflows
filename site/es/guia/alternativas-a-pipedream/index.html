@@ -34,6 +34,9 @@ h3{font-size:1.05rem;margin:22px 0 6px}
 p{margin:0 0 12px} ul,ol{padding-left:22px;margin:0 0 12px} li{margin-bottom:6px}
 code,.mono{font-family:var(--f-mono);font-size:.88em}
 code{background:var(--sunk);padding:1px 5px;border-radius:4px}
+pre{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;margin:0 0 8px;font-size:13px;line-height:1.5}
+pre code{background:none;padding:0;font-size:inherit}
+.copy{font:600 13px var(--f-body);background:var(--accent);color:var(--bg);border:0;border-radius:6px;padding:7px 12px;cursor:pointer;margin:0 0 16px}
 .eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
 .answer{background:var(--accent-soft);border-left:3px solid var(--accent);padding:14px 18px;border-radius:0 8px 8px 0;margin:0 0 8px}
 .answer p{margin:0}
@@ -87,7 +90,7 @@ thead th{border-top:0;font-family:var(--f-mono);font-size:11.5px;letter-spacing:
 <h2>Elijas lo que elijas, antes del 31 de marzo</h2>
 <ul>
   <li>Exportá ya todos los proyectos. El export va de a un proyecto y saltea los flujos que nunca se publicaron. Mirá <a href="/es/guia/exportar-flujos-de-pipedream/">cómo exportar tus flujos de Pipedream</a>.</li>
-  <li>Bajá tus data stores y los archivos del File Store, y copiá tus variables de entorno: el export no los incluye.</li>
+  <li>Bajá tus data stores (<a href="/es/guia/exportar-data-stores-de-pipedream/">exportador que solo lee</a>) y los archivos del File Store, y copiá tus variables de entorno: el export no los incluye.</li>
   <li>Anotá a qué apps se conecta cada flujo, para reconectar esas cuentas en la herramienta nueva.</li>
   <li>Planificá el cambio de webhooks: cada servicio que llama a una URL de Pipedream necesita la nueva.</li>
 </ul>

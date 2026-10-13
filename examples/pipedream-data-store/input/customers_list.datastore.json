@@ -1,0 +1,15 @@
+{
+ "migrateflows": "pipedream-data-store",
+ "version": 1,
+ "name": "customers list",
+ "exportedAt": "2026-10-13T22:00:00Z",
+ "count": 3,
+ "records": {
+  "ana@example.com": {
+   "total": 120,
+   "vip": true
+  },
+  "bob@example.com": 45,
+  "lastRun": "2026-10-01T10:00:00.000Z"
+ }
+}

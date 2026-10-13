@@ -1,0 +1,125 @@
+{
+ "name": "Customer lookup",
+ "nodes": [
+  {
+   "name": "start",
+   "parameters": {},
+   "type": "n8n-nodes-base.manualTrigger",
+   "typeVersion": 1,
+   "id": "a1e84dc8-9cfc-4218-978f-55678ec475f9",
+   "position": [
+    0,
+    300
+   ]
+  },
+  {
+   "name": "trigger",
+   "parameters": {
+    "jsCode": "// Recreates the shape of Pipedream's trigger event (steps.trigger.event). pdmigra.\nconst now = new Date();\nconst fmt = (d) => ({ iso8601: { timestamp: d.toISOString() }, timezone: 'UTC' });\nreturn [{ json: { ...($input.first()?.json || {}), timestamp: Math.floor(now.getTime() / 1000), timezone_configured: fmt(now), timezone_utc: fmt(now), __context: { ts: now.toISOString(), id: $execution.id, workflow_id: $workflow.id } } }];"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "id": "7bc76758-1f9d-4935-bac4-d8a132ba53d9",
+   "position": [
+    240,
+    300
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "// Converted from Pipedream step \"lookup\" by pdmigra.\nconst __node = this;\nconst __try = (f, d) => { try { const v = f(); return v === undefined ? d : v; } catch (e) { return d; } };\nconst __safe = (n) => { try { return $(n).first().json; } catch (e) { return undefined; } };\nconst __stepOut = (n) => { const j = __safe(n); return j && typeof j === 'object' && !Array.isArray(j) ? { ...j, $return_value: j.$return_value !== undefined ? j.$return_value : j } : { $return_value: j }; };\nconst __secret = (k) => { try { if (typeof $vars !== 'undefined' && $vars[k] !== undefined) return $vars[k]; } catch (e) {} try { return $env[k]; } catch (e) { return undefined; } };\nconst __app = (name) => ({ $auth: new Proxy({}, { get: (_, f) => __secret(`${name}_${String(f)}`.toUpperCase()) }) });\nconst __store = (name, seed) => {\n  const sd = $getWorkflowStaticData('global');\n  sd[name] = sd[name] || seed || {};\n  const m = sd[name];\n  return { get: async (k) => m[k], set: async (k, v) => { m[k] = v; }, has: async (k) => k in m,\n    delete: async (k) => { delete m[k]; }, keys: async () => Object.keys(m),\n    entries: async () => Object.entries(m).map(([key, value]) => ({ key, value })),\n    clear: async () => { for (const k of Object.keys(m)) delete m[k]; }, setTtl: async () => {},\n    [Symbol.asyncIterator]: async function* () { for (const e of Object.entries(m)) yield e; } };\n};\n// ---- original code (imports adapted) ----\nconst __component = ({\n  props: { customers: { type: \"data_store\" } },\n  async run({ steps, $ }) {\n    const ana = await this.customers.get(\"ana@example.com\");\n    let n = 0;\n    for await (const [k] of this.customers) n++;\n    await this.customers.set(\"visits\", 1);\n    return { ana, n };\n  },\n});\n;\n// ---- Pipedream-style execution ----\nconst steps = {\n  trigger: (() => { const t = __safe('trigger') || {}; const { __context, ...event } = t; return { event, context: __context || {} }; })(),\n\n};\nconst __exports = {};\nlet __response = null;\nclass __Exit extends Error {}\nconst __pd = {\n  export: (k, v) => { __exports[k] = v; },\n  respond: async (r) => { __response = r; },\n  flow: { exit: (r) => { throw new __Exit(r || 'exit'); },\n    delay: () => { throw new Error('$.flow.delay: use a Wait node'); },\n    rerun: () => { throw new Error('$.flow.rerun has no n8n equivalent'); } },\n};\nconst __ctx = {\n  \"customers\": __try(() => (\"ds_abc\"), undefined)\n};\n\n__ctx[\"customers\"] = __store(\"customers list\", {\"ana@example.com\":{\"total\":120,\"vip\":true},\"bob@example.com\":45,\"lastRun\":\"2026-10-01T10:00:00.000Z\"});\nlet __ret;\ntry {\n  __ret = await __component.run.call(__ctx, { steps, $: __pd });\n} catch (e) {\n  // A step that answered the webhook and then exited still has to send that answer before the flow stops.\n  if (e instanceof __Exit) return __response ? [{ json: { __respond: __response, __exit: true } }] : [];\n  throw e;\n}\nconst { $summary, ...__exp } = __exports;\nreturn [{ json: { $return_value: __ret === undefined ? null : __ret, ...__exp, ...(__response ? { __respond: __response } : {}) } }];\n"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "name": "lookup",
+   "id": "3b9542a1-0f8f-44bb-bd5d-e7656e63013d",
+   "position": [
+    480,
+    300
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "// Pipedream data store action \"data_stores-get-record\" re-implemented on n8n static data. pdmigra.\nconst __node = this;\nconst __try = (f, d) => { try { const v = f(); return v === undefined ? d : v; } catch (e) { return d; } };\nconst __safe = (n) => { try { return $(n).first().json; } catch (e) { return undefined; } };\nconst __stepOut = (n) => { const j = __safe(n); return j && typeof j === 'object' && !Array.isArray(j) ? { ...j, $return_value: j.$return_value !== undefined ? j.$return_value : j } : { $return_value: j }; };\nconst __secret = (k) => { try { if (typeof $vars !== 'undefined' && $vars[k] !== undefined) return $vars[k]; } catch (e) {} try { return $env[k]; } catch (e) { return undefined; } };\nconst __app = (name) => ({ $auth: new Proxy({}, { get: (_, f) => __secret(`${name}_${String(f)}`.toUpperCase()) }) });\nconst steps = {\n  trigger: (() => { const t = __safe('trigger') || {}; const { __context, ...event } = t; return { event, context: __context || {} }; })(),\n  \"lookup\": __stepOut(\"lookup\"),\n};\nconst P = {\n  \"key\": __try(() => (\"bob@example.com\"), undefined)\n};\nconst sd = $getWorkflowStaticData('global');\nsd[\"customers list\"] = sd[\"customers list\"] || {\"ana@example.com\":{\"total\":120,\"vip\":true},\"bob@example.com\":45,\"lastRun\":\"2026-10-01T10:00:00.000Z\"};\nconst m = sd[\"customers list\"];\nconst key = P.key; let value = P.value;\nif (typeof value === 'string') { try { value = JSON.parse(value); } catch (e) {} }\nconst out = (() => { return m[key]; })();\nreturn [{ json: { $return_value: out === undefined ? null : out } }];"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "name": "get_bob",
+   "id": "8da72a34-7f71-4a4b-880c-7922383d9250",
+   "position": [
+    720,
+    300
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "// Pipedream data store action \"data_stores-get-record\" re-implemented on n8n static data. pdmigra.\nconst __node = this;\nconst __try = (f, d) => { try { const v = f(); return v === undefined ? d : v; } catch (e) { return d; } };\nconst __safe = (n) => { try { return $(n).first().json; } catch (e) { return undefined; } };\nconst __stepOut = (n) => { const j = __safe(n); return j && typeof j === 'object' && !Array.isArray(j) ? { ...j, $return_value: j.$return_value !== undefined ? j.$return_value : j } : { $return_value: j }; };\nconst __secret = (k) => { try { if (typeof $vars !== 'undefined' && $vars[k] !== undefined) return $vars[k]; } catch (e) {} try { return $env[k]; } catch (e) { return undefined; } };\nconst __app = (name) => ({ $auth: new Proxy({}, { get: (_, f) => __secret(`${name}_${String(f)}`.toUpperCase()) }) });\nconst steps = {\n  trigger: (() => { const t = __safe('trigger') || {}; const { __context, ...event } = t; return { event, context: __context || {} }; })(),\n  \"lookup\": __stepOut(\"lookup\"),\n  \"get_bob\": __stepOut(\"get_bob\"),\n};\nconst P = {\n  \"key\": __try(() => (\"visits\"), undefined)\n};\nconst sd = $getWorkflowStaticData('global');\nsd[\"customers list\"] = sd[\"customers list\"] || {\"ana@example.com\":{\"total\":120,\"vip\":true},\"bob@example.com\":45,\"lastRun\":\"2026-10-01T10:00:00.000Z\"};\nconst m = sd[\"customers list\"];\nconst key = P.key; let value = P.value;\nif (typeof value === 'string') { try { value = JSON.parse(value); } catch (e) {} }\nconst out = (() => { return m[key]; })();\nreturn [{ json: { $return_value: out === undefined ? null : out } }];"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "name": "get_visits",
+   "id": "5b96a542-942e-4426-9936-e184e4070951",
+   "position": [
+    960,
+    300
+   ]
+  }
+ ],
+ "connections": {
+  "start": {
+   "main": [
+    [
+     {
+      "node": "trigger",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "trigger": {
+   "main": [
+    [
+     {
+      "node": "lookup",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "lookup": {
+   "main": [
+    [
+     {
+      "node": "get_bob",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "get_bob": {
+   "main": [
+    [
+     {
+      "node": "get_visits",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "active": false,
+ "settings": {
+  "executionOrder": "v1"
+ },
+ "pinData": {},
+ "meta": {
+  "pdmigra": {
+   "source": "customer-lookup-p_ds01.json",
+   "converted": "2026-10-13T22:21:04.194Z"
+  }
+ }
+}
