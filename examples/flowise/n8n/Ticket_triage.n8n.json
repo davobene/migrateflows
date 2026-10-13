@@ -1,0 +1,358 @@
+{
+ "name": "Ticket triage",
+ "nodes": [
+  {
+   "parameters": {
+    "options": {}
+   },
+   "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+   "typeVersion": 1.1,
+   "position": [
+    0,
+    0
+   ],
+   "id": "374c69ed-fba5-4756-b468-02bee1d8e82f",
+   "name": "When chat message received",
+   "webhookId": "481ea45d-79a8-4687-916f-b2d5ddc49ff0"
+  },
+  {
+   "parameters": {
+    "mode": "manual",
+    "assignments": {
+     "assignments": [
+      {
+       "id": "b6232b37-d325-41ab-8030-bf4ccefb4518",
+       "name": "ticket",
+       "value": "",
+       "type": "string"
+      }
+     ]
+    },
+    "includeOtherFields": true,
+    "options": {}
+   },
+   "type": "n8n-nodes-base.set",
+   "typeVersion": 3.4,
+   "position": [
+    260,
+    0
+   ],
+   "id": "810ca6c1-af80-43c1-9d18-69eab36e000a",
+   "name": "Flow state"
+  },
+  {
+   "parameters": {
+    "inputText": "={{ $('When chat message received').item.json.chatInput }}",
+    "categories": {
+     "categories": [
+      {
+       "category": "Billing or refunds",
+       "description": "Billing or refunds"
+      },
+      {
+       "category": "Technical problem",
+       "description": "Technical problem"
+      },
+      {
+       "category": "Anything else",
+       "description": "Anything else"
+      }
+     ]
+    },
+    "options": {
+     "systemPromptTemplate": "Classify the customer message.\n\nClassify the text into exactly one of the categories. {categories}"
+    }
+   },
+   "type": "@n8n/n8n-nodes-langchain.textClassifier",
+   "typeVersion": 1.1,
+   "position": [
+    520,
+    0
+   ],
+   "id": "69239b10-0c76-4ce8-9580-10a5de37a7f1",
+   "name": "Classify ticket"
+  },
+  {
+   "parameters": {
+    "model": {
+     "__rl": true,
+     "mode": "list",
+     "value": "gpt-4o-mini"
+    },
+    "options": {
+     "temperature": 0
+    }
+   },
+   "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+   "typeVersion": 1.2,
+   "position": [
+    560,
+    220
+   ],
+   "id": "ad2dbca1-78e1-4c87-902d-c9fcac29350f",
+   "name": "OpenAI Chat Model"
+  },
+  {
+   "parameters": {
+    "promptType": "define",
+    "text": "={{ $('When chat message received').item.json.chatInput }}",
+    "options": {
+     "systemMessage": "You handle billing and refunds. Be brief."
+    }
+   },
+   "type": "@n8n/n8n-nodes-langchain.agent",
+   "typeVersion": 2.2,
+   "position": [
+    780,
+    0
+   ],
+   "id": "693db88c-aaef-479b-bb98-1c7d32bb0cef",
+   "name": "Billing agent"
+  },
+  {
+   "parameters": {
+    "model": {
+     "__rl": true,
+     "mode": "list",
+     "value": "claude-3-5-haiku-latest"
+    },
+    "options": {
+     "temperature": 0.2
+    }
+   },
+   "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+   "typeVersion": 1.3,
+   "position": [
+    640,
+    220
+   ],
+   "id": "5eecbc04-10cb-4647-9aa4-ebd103b9e0b7",
+   "name": "Anthropic Chat Model"
+  },
+  {
+   "parameters": {
+    "sessionIdType": "customKey",
+    "sessionKey": "={{ $('When chat message received').item.json.sessionId }}",
+    "contextWindowLength": 10
+   },
+   "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+   "typeVersion": 1.3,
+   "position": [
+    820,
+    220
+   ],
+   "id": "56e9454e-1e74-4b61-9046-460214340d26",
+   "name": "Simple Memory"
+  },
+  {
+   "parameters": {},
+   "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+   "typeVersion": 1,
+   "position": [
+    1000,
+    220
+   ],
+   "id": "31fb83f2-0412-4c16-a8a0-ed6a5aece906",
+   "name": "Calculator"
+  },
+  {
+   "parameters": {
+    "promptType": "define",
+    "text": "={{ $('When chat message received').item.json.chatInput }}",
+    "options": {
+     "systemMessage": "Answer technical questions in two sentences."
+    }
+   },
+   "type": "@n8n/n8n-nodes-langchain.agent",
+   "typeVersion": 2.2,
+   "position": [
+    1040,
+    140
+   ],
+   "id": "b510743b-9e43-4112-bba2-c564f0fa0721",
+   "name": "Tech answer"
+  },
+  {
+   "parameters": {
+    "sessionIdType": "customKey",
+    "sessionKey": "={{ $('When chat message received').item.json.sessionId }}",
+    "contextWindowLength": 10
+   },
+   "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+   "typeVersion": 1.3,
+   "position": [
+    990,
+    360
+   ],
+   "id": "83118ae3-ce1f-4ec4-8371-2257b63e5859",
+   "name": "Simple Memory 2"
+  },
+  {
+   "parameters": {
+    "model": {
+     "__rl": true,
+     "mode": "list",
+     "value": "gpt-4o-mini"
+    },
+    "options": {}
+   },
+   "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+   "typeVersion": 1.2,
+   "position": [
+    1170,
+    360
+   ],
+   "id": "6ad33506-267b-4012-8606-afcb16c931d5",
+   "name": "OpenAI Chat Model 2"
+  },
+  {
+   "parameters": {
+    "mode": "manual",
+    "assignments": {
+     "assignments": [
+      {
+       "id": "f40eb170-17ce-480a-a1aa-a3afecb1ebce",
+       "name": "output",
+       "value": "Thanks! A person from the team will answer you soon.",
+       "type": "string"
+      }
+     ]
+    },
+    "options": {}
+   },
+   "type": "n8n-nodes-base.set",
+   "typeVersion": 3.4,
+   "position": [
+    1300,
+    280
+   ],
+   "id": "771eb785-d9c3-4589-bc4d-59dab9a01a1f",
+   "name": "Default reply"
+  }
+ ],
+ "connections": {
+  "When chat message received": {
+   "main": [
+    [
+     {
+      "node": "Flow state",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "OpenAI Chat Model": {
+   "ai_languageModel": [
+    [
+     {
+      "node": "Classify ticket",
+      "type": "ai_languageModel",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Flow state": {
+   "main": [
+    [
+     {
+      "node": "Classify ticket",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Anthropic Chat Model": {
+   "ai_languageModel": [
+    [
+     {
+      "node": "Billing agent",
+      "type": "ai_languageModel",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Simple Memory": {
+   "ai_memory": [
+    [
+     {
+      "node": "Billing agent",
+      "type": "ai_memory",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Calculator": {
+   "ai_tool": [
+    [
+     {
+      "node": "Billing agent",
+      "type": "ai_tool",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Classify ticket": {
+   "main": [
+    [
+     {
+      "node": "Billing agent",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    [
+     {
+      "node": "Tech answer",
+      "type": "main",
+      "index": 0
+     }
+    ],
+    [
+     {
+      "node": "Default reply",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Simple Memory 2": {
+   "ai_memory": [
+    [
+     {
+      "node": "Tech answer",
+      "type": "ai_memory",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "OpenAI Chat Model 2": {
+   "ai_languageModel": [
+    [
+     {
+      "node": "Tech answer",
+      "type": "ai_languageModel",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "pinData": {},
+ "settings": {
+  "executionOrder": "v1"
+ },
+ "active": false,
+ "meta": {
+  "templateCredsSetupCompleted": false,
+  "convertedFrom": "flowise",
+  "converter": "MigrateFlows"
+ }
+}

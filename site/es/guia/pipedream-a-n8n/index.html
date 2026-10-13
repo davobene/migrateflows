@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cómo migrar tus flujos de Pipedream a n8n antes del 31 de marzo de 2027</title>
+<meta name="description" content="Pipedream Workflows cierra el 31 de marzo de 2027. Fechas, qué trae el export, cómo se traduce cada concepto a n8n y un plan paso a paso.">
+<link rel="canonical" href="https://migrateflows.com/es/guia/pipedream-a-n8n/"><link rel="alternate" hreflang="es" href="https://migrateflows.com/es/guia/pipedream-a-n8n/"><link rel="alternate" hreflang="en" href="https://migrateflows.com/guide/pipedream-to-n8n/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cómo migrar tus flujos de Pipedream a n8n antes del 31 de marzo de 2027">
+<meta property="og:description" content="Pipedream Workflows cierra el 31 de marzo de 2027. Fechas, qué trae el export, cómo se traduce cada concepto a n8n y un plan paso a paso.">
+<meta property="og:url" content="https://migrateflows.com/es/guia/pipedream-a-n8n/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@700;800&family=Public+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+:root{--bg:#f3f4ef;--surface:#fff;--sunk:#e9ebe3;--ink:#15181d;--muted:#5b616b;--line:#d6d9cf;--accent:#0d6b62;--accent-soft:#dcefeb;
+--f-display:"Schibsted Grotesk","Segoe UI",system-ui,sans-serif;--f-body:"Public Sans","Segoe UI",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme: dark){:root{--bg:#101316;--surface:#171b1f;--sunk:#1e2328;--ink:#e7e9e3;--muted:#9aa1aa;--line:#2a3036;--accent:#45b5a6;--accent-soft:#16302c;color-scheme:dark}}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65}
+.wrap{max-width:760px;margin:0 auto;padding-inline:20px;padding-block:24px 72px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:36px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.1rem;display:flex;gap:10px;align-items:center;color:var(--ink);text-decoration:none}
+.brand svg{width:24px;height:24px}
+.top nav{display:flex;gap:16px;font-size:14px}
+a{color:var(--accent)}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;letter-spacing:-0.01em}
+h1{font-size:clamp(1.9rem,5vw,2.6rem);margin:6px 0 20px}
+h2{font-size:1.4rem;margin:40px 0 12px}
+h3{font-size:1.05rem;margin:22px 0 6px}
+p{margin:0 0 12px} ul,ol{padding-left:22px;margin:0 0 12px} li{margin-bottom:6px}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+code{background:var(--sunk);padding:1px 5px;border-radius:4px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.answer{background:var(--accent-soft);border-left:3px solid var(--accent);padding:14px 18px;border-radius:0 8px 8px 0;margin:0 0 8px}
+.answer p{margin:0}
+.table{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:0 0 12px}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+thead th{border-top:0;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cta{margin:36px 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.cta a.btn{background:var(--accent);color:var(--bg);text-decoration:none;font-weight:600;padding:10px 16px;border-radius:8px}
+.small{font-size:13.5px} .muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><a class="brand" href="/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><rect x="1" y="5" width="10" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="15" y="5" width="10" height="16" rx="2.5" fill="#0d6b62"/><path d="M8 13h10m-3-3 3 3-3 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>MigrateFlows</a><nav><a href="/">Convertidor</a><a href="/guide/pipedream-to-n8n/" hreflang="en">English</a></nav></div>
+<article>
+<p class="eyebrow">Guía de migración · actualizada en octubre de 2026</p>
+<h1>Pipedream Workflows cierra el 31 de marzo de 2027. Así se mudan tus flujos a n8n.</h1>
+
+<div class="answer">
+  <p><strong>Respuesta corta.</strong> Pipedream dejó de aceptar altas nuevas en Workflows el 30 de septiembre de 2026. Los flujos existentes siguen funcionando hasta el <strong>31 de marzo de 2027</strong>, y todos los datos de Workflows, incluidas credenciales y tokens OAuth, se borran antes del <strong>30 de abril de 2027</strong>. El export de Pipedream te da un archivo JSON por flujo, pero n8n no lo puede importar directamente: cada flujo hay que reconstruirlo o convertirlo.</p>
+</div>
+
+<h2>Las fechas que importan</h2>
+<div class="table"><table>
+  <thead><tr><th>Fecha</th><th>Qué pasa</th></tr></thead>
+  <tbody>
+    <tr><td class="mono">30 sep 2026</td><td>No hay altas ni suscripciones nuevas. Workflows queda en mantenimiento.</td></tr>
+    <tr><td class="mono">31 mar 2027</td><td>Cierran Workflows y String. Las suscripciones terminan con reintegro proporcional.</td></tr>
+    <tr><td class="mono">30 abr 2027</td><td>Se borran para siempre todos los datos de Workflows, incluidas credenciales y tokens OAuth.</td></tr>
+  </tbody>
+</table></div>
+<p>Pipedream Connect (la API de Connect, los servidores MCP y el proxy de API) no se ve afectado. Solo cierran Workflows y String.</p>
+
+<h2>Qué trae el export y qué deja afuera</h2>
+<p>El export se hace de a un proyecto y genera un ZIP con un <code>manifest.json</code> y un archivo JSON por flujo. Cada archivo tiene sus disparadores, sus pasos (el código en los pasos de código, la clave y versión del componente en las acciones prearmadas) y los props que configuraste.</p>
+<ul>
+  <li><strong>Borrado por seguridad:</strong> los valores secretos, las credenciales de las cuentas conectadas y los tokens OAuth (queda solo un <code>authProvisionId</code>, que funciona únicamente dentro de Pipedream).</li>
+  <li><strong>No viene:</strong> variables de entorno, historial de eventos, data stores, archivos del File Store y el código de componentes privados de varios archivos.</li>
+  <li><strong>Se saltea:</strong> los flujos que nunca se publicaron y lo que pase del límite de 500 flujos o 256 MB por export.</li>
+</ul>
+<p>Así que antes de la fecha, bajá el contenido de tus data stores y copiá tus variables de entorno por separado. El export no los guarda.</p>
+
+<h2>Cómo se traduce cada concepto de Pipedream a n8n</h2>
+<div class="table"><table>
+  <thead><tr><th>Pipedream</th><th>n8n</th></tr></thead>
+  <tbody>
+    <tr><td>Disparador HTTP / webhook</td><td>Nodo Webhook (URL nueva: actualizala donde se originan los eventos)</td></tr>
+    <tr><td>Disparador programado</td><td>Nodo Schedule Trigger</td></tr>
+    <tr><td>Disparador por email</td><td>Email Trigger (IMAP) con una casilla tuya</td></tr>
+    <tr><td>Fuente de eventos de una app</td><td>El nodo disparador de esa app, o un sondeo programado</td></tr>
+    <tr><td>Paso de código Node.js</td><td>Nodo Code (JavaScript)</td></tr>
+    <tr><td>Paso de código Python</td><td>Nodo Code (Python)</td></tr>
+    <tr><td><code>steps.nombre.$return_value</code></td><td><code>$('nombre').first().json</code></td></tr>
+    <tr><td><code>$.export('clave', valor)</code></td><td>Un campo en la salida del nodo</td></tr>
+    <tr><td><code>$.flow.exit()</code></td><td>No devolver items, así no corren los nodos siguientes</td></tr>
+    <tr><td><code>$.respond()</code></td><td>Nodo Respond to Webhook</td></tr>
+    <tr><td>Cuentas conectadas</td><td>Credenciales de n8n</td></tr>
+    <tr><td>Variables de entorno</td><td>Variables de n8n o variables de entorno</td></tr>
+    <tr><td>Data stores</td><td>Data tables de n8n, datos estáticos del flujo o una base externa</td></tr>
+    <tr><td>Acciones prearmadas</td><td>El nodo de esa app en n8n, o un nodo HTTP Request con la credencial de esa app</td></tr>
+  </tbody>
+</table></div>
+
+<h2>Paso a paso</h2>
+<ol class="steps">
+  <li><strong>Hacé un inventario.</strong> Listá cada flujo, marcá los importantes y anotá qué dispara a cada uno.</li>
+  <li><strong>Exportá cada proyecto.</strong> El ZIP se guarda en el File Store del proyecto; bajalo de ahí.</li>
+  <li><strong>Guardá lo que el export no trae.</strong> Bajá el contenido de los data stores y copiá las variables de entorno.</li>
+  <li><strong>Convertí.</strong> Reconstruí cada flujo en n8n a mano, o soltá el ZIP en <a href="/">MigrateFlows</a> y recibí flujos de n8n más una lista de pendientes.</li>
+  <li><strong>Importá en n8n.</strong> Usá Import from file, o pegá el JSON del flujo en un lienzo vacío.</li>
+  <li><strong>Reconectá.</strong> Creá las credenciales y variables que necesita cada flujo.</li>
+  <li><strong>Probá con eventos reales.</strong> Corré cada flujo con un evento de muestra y compará el resultado con el de Pipedream.</li>
+  <li><strong>Hacé el cambio.</strong> Apuntá los webhooks y los emisores a las URLs nuevas de n8n. Si corrés las dos plataformas en paralelo un día, cuidá que el mismo evento no se procese dos veces.</li>
+  <li><strong>Apagá el flujo de Pipedream</strong> cuando n8n haya manejado tráfico real sin errores.</li>
+</ol>
+
+<h2>Lo que más se rompe</h2>
+<ul>
+  <li><strong>Paquetes npm.</strong> n8n Cloud no permite módulos npm externos en los nodos Code. n8n instalado por uno mismo los permite con <code>NODE_FUNCTION_ALLOW_EXTERNAL</code>.</li>
+  <li><strong>Credenciales usadas en el código.</strong> El código que lee <code>this.app.$auth</code> necesita esos valores como variables de n8n, o pasar la llamada a un nodo HTTP Request con credencial.</li>
+  <li><strong>Forma de los datos.</strong> Los nodos de apps de n8n no siempre devuelven los mismos campos que las acciones de Pipedream. Los pasos siguientes que leen campos específicos necesitan una revisión.</li>
+  <li><strong>Duplicados y estado de sondeo.</strong> Las fuentes que sondean recuerdan lo que ya vieron. Reconstruí ese estado o la primera corrida en n8n puede reprocesar items viejos.</li>
+  <li><strong>URLs de webhook.</strong> Cada webhook tiene una dirección nueva. Actualizala en cada servicio que manda eventos.</li>
+  <li><strong>Husos horarios.</strong> Revisá el huso horario de cada programación después de mudarla.</li>
+</ul>
+
+<div class="cta"><span>¿Ya tenés el ZIP del export? Convertilo en tu navegador.</span><a class="btn" href="/">Convertir mis flujos</a></div>
+<h2>Convertir automáticamente</h2>
+<p><a href="/">MigrateFlows</a> lee el ZIP del export de Pipedream o una carpeta de GitHub Sync y devuelve flujos de n8n listos para importar. Los pasos de código Node.js siguen funcionando con una pequeña capa de compatibilidad para <code>steps</code>, <code>$.export</code>, <code>$.flow.exit</code>, <code>$.respond</code> y <code>axios</code>. Las acciones prearmadas de servicios comunes pasan a nodos HTTP Request que usan tus propias credenciales de n8n, así devuelven los mismos datos que antes. Cada flujo viene con la lista de lo que queda por hacer a mano. Todo corre en tu navegador; tus archivos no se suben.</p>
+
+<h2>Preguntas</h2>
+<h3>¿Puedo importar el export de Pipedream directamente en n8n?</h3>
+<p>No. Los formatos son distintos. Cada flujo hay que reconstruirlo o convertirlo antes.</p>
+<h3>¿Se vienen mis cuentas conectadas?</h3>
+<p>No. El export borra tokens y credenciales, así que conectás cada cuenta de nuevo en n8n.</p>
+<h3>¿También cierra Pipedream Connect?</h3>
+<p>No. Connect, sus servidores MCP y el proxy de API siguen funcionando.</p>
+<h3>¿Tengo que usar n8n?</h3>
+<p>No. Windmill, Trigger.dev, Make o código propio en una plataforma serverless también son opciones. n8n es una elección común porque tiene nodos de código, webhooks, programaciones y credenciales para cientos de servicios, y se puede instalar en un servidor propio.</p>
+
+<p class="small muted">Fuentes: documentación de Pipedream sobre el cierre de Workflows y sobre el export de flujos (pipedream.com/docs/workflows). MigrateFlows es independiente y no tiene relación con Pipedream, Workday ni n8n.</p>
+</article>
+
+</div>
+</body>
+</html>

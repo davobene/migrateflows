@@ -1,0 +1,167 @@
+{
+ "name": "Lead capture webhook",
+ "nodes": [
+  {
+   "name": "webhook",
+   "parameters": {
+    "httpMethod": "POST",
+    "path": "6e89c300-4558-4bad-98b4-8456e78d3cb7",
+    "responseMode": "responseNode",
+    "options": {}
+   },
+   "type": "n8n-nodes-base.webhook",
+   "typeVersion": 2,
+   "webhookId": "6149b495-926b-48e1-afe0-cb8342d2265d",
+   "id": "58acb594-0455-45ca-96d1-4b9f463e70d3",
+   "position": [
+    0,
+    300
+   ]
+  },
+  {
+   "name": "trigger",
+   "parameters": {
+    "jsCode": "// Recreates the shape of Pipedream's trigger event (steps.trigger.event). pdmigra.\nconst j = $input.first().json;\nreturn [{ json: { method: 'POST', path: '/', query: j.query || {}, headers: j.headers || {}, body: j.body, url: j.webhookUrl, __context: { ts: new Date().toISOString(), id: $execution.id, workflow_id: $workflow.id } } }];"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "id": "4dd03fef-1a11-4dfb-bc0b-5be31e471442",
+   "position": [
+    240,
+    300
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "// Converted from Pipedream step \"validate\" by pdmigra.\nconst __node = this;\nconst __try = (f, d) => { try { const v = f(); return v === undefined ? d : v; } catch (e) { return d; } };\nconst __safe = (n) => { try { return $(n).first().json; } catch (e) { return undefined; } };\nconst __stepOut = (n) => { const j = __safe(n); return j && typeof j === 'object' && !Array.isArray(j) ? { ...j, $return_value: j.$return_value !== undefined ? j.$return_value : j } : { $return_value: j }; };\nconst __secret = (k) => { try { if (typeof $vars !== 'undefined' && $vars[k] !== undefined) return $vars[k]; } catch (e) {} try { return $env[k]; } catch (e) { return undefined; } };\nconst __app = (name) => ({ $auth: new Proxy({}, { get: (_, f) => __secret(`${name}_${String(f)}`.toUpperCase()) }) });\nconst __store = (name) => {\n  const sd = $getWorkflowStaticData('global');\n  sd[name] = sd[name] || {};\n  const m = sd[name];\n  return { get: async (k) => m[k], set: async (k, v) => { m[k] = v; }, has: async (k) => k in m,\n    delete: async (k) => { delete m[k]; }, keys: async () => Object.keys(m),\n    entries: async () => Object.entries(m).map(([key, value]) => ({ key, value })),\n    clear: async () => { for (const k of Object.keys(m)) delete m[k]; } };\n};\n// ---- original code (imports adapted) ----\nconst __component = ({\n  async run({ steps, $ }) {\n    const { email } = steps.trigger.event.body || {};\n    if (!email) {\n      await $.respond({ status: 400, body: { error: 'email is required' } });\n      return $.flow.exit('missing email');\n    }\n    await $.respond({ status: 200, body: { ok: true } });\n    return { email };\n  },\n});\n;\n// ---- Pipedream-style execution ----\nconst steps = {\n  trigger: (() => { const t = __safe('trigger') || {}; const { __context, ...event } = t; return { event, context: __context || {} }; })(),\n\n};\nconst __exports = {};\nlet __response = null;\nclass __Exit extends Error {}\nconst __pd = {\n  export: (k, v) => { __exports[k] = v; },\n  respond: async (r) => { __response = r; },\n  flow: { exit: (r) => { throw new __Exit(r || 'exit'); },\n    delay: () => { throw new Error('$.flow.delay: use a Wait node'); },\n    rerun: () => { throw new Error('$.flow.rerun has no n8n equivalent'); } },\n};\nconst __ctx = {};\n\n\nlet __ret;\ntry {\n  __ret = await __component.run.call(__ctx, { steps, $: __pd });\n} catch (e) {\n  // A step that answered the webhook and then exited still has to send that answer before the flow stops.\n  if (e instanceof __Exit) return __response ? [{ json: { __respond: __response, __exit: true } }] : [];\n  throw e;\n}\nconst { $summary, ...__exp } = __exports;\nreturn [{ json: { $return_value: __ret === undefined ? null : __ret, ...__exp, ...(__response ? { __respond: __response } : {}) } }];\n"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "name": "validate",
+   "id": "916a1043-9404-492c-9ead-0f51be80c188",
+   "position": [
+    480,
+    300
+   ]
+  },
+  {
+   "name": "respond_validate",
+   "id": "fcda4045-272f-4c7d-8380-ded2131021bf",
+   "type": "n8n-nodes-base.respondToWebhook",
+   "typeVersion": 1.1,
+   "parameters": {
+    "respondWith": "json",
+    "responseBody": "={{ JSON.stringify($json.__respond?.body ?? $json.__respond ?? {}) }}",
+    "options": {
+     "responseCode": "={{ $json.__respond?.status ?? 200 }}"
+    }
+   },
+   "position": [
+    720,
+    300
+   ]
+  },
+  {
+   "name": "continue_validate",
+   "id": "fd50e2af-99c6-454f-af06-7a795bb6bd0e",
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "parameters": {
+    "jsCode": "// Pipedream's $.flow.exit after $.respond: the answer was sent, the workflow stops here. pdmigra.\nreturn $input.all().filter((i) => !i.json.__exit);"
+   },
+   "position": [
+    960,
+    300
+   ]
+  },
+  {
+   "parameters": {
+    "method": "POST",
+    "url": "https://api.airtable.com/v0/appSample/tblLeads",
+    "authentication": "predefinedCredentialType",
+    "options": {},
+    "nodeCredentialType": "airtableTokenApi",
+    "sendBody": true,
+    "contentType": "json",
+    "specifyBody": "json",
+    "jsonBody": "={{ ({ fields: {\"Email\": ($('validate').first().json.$return_value.email)} }) }}"
+   },
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "name": "save_lead",
+   "id": "4f8d60ed-5cc8-4778-8a8f-1de2d2813493",
+   "position": [
+    1200,
+    300
+   ]
+  }
+ ],
+ "connections": {
+  "webhook": {
+   "main": [
+    [
+     {
+      "node": "trigger",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "trigger": {
+   "main": [
+    [
+     {
+      "node": "validate",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "validate": {
+   "main": [
+    [
+     {
+      "node": "respond_validate",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "respond_validate": {
+   "main": [
+    [
+     {
+      "node": "continue_validate",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "continue_validate": {
+   "main": [
+    [
+     {
+      "node": "save_lead",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "active": false,
+ "settings": {
+  "executionOrder": "v1"
+ },
+ "pinData": {},
+ "meta": {
+  "pdmigra": {
+   "source": "lead-capture.json",
+   "converted": "2026-10-13T16:11:32.525Z"
+  }
+ }
+}

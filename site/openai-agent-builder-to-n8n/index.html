@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>OpenAI Agent Builder to n8n converter: migrate before November 30 | MigrateFlows</title>
+<meta name="description" content="OpenAI shuts down Agent Builder on November 30, 2026. Paste your Agents SDK export (Python or TypeScript) and get n8n workflows with the same agents, tools, guardrails and logic, in your browser.">
+<link rel="canonical" href="https://migrateflows.com/openai-agent-builder-to-n8n/"><link rel="alternate" hreflang="en" href="https://migrateflows.com/openai-agent-builder-to-n8n/"><link rel="alternate" hreflang="es" href="https://migrateflows.com/openai-agent-builder-to-n8n/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="OpenAI Agent Builder to n8n converter: migrate before November 30 | MigrateFlows">
+<meta property="og:description" content="OpenAI shuts down Agent Builder on November 30, 2026. Paste your Agents SDK export (Python or TypeScript) and get n8n workflows with the same agents, tools, guardrails and logic, in your browser.">
+<meta property="og:url" content="https://migrateflows.com/openai-agent-builder-to-n8n/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same workbench as the other converters — hero with the shutdown countdown, input | results, then reference and service. */
+:root{
+  --bg:#f3f4ef; --surface:#ffffff; --sunk:#e9ebe3; --ink:#15181d; --muted:#5b616b; --line:#d6d9cf;
+  --accent:#0d6b62; --accent-ink:#ffffff; --accent-soft:#dcefeb;
+  --ok:#2c7a4b; --ok-bg:#e1f1e6; --warn:#8a5a00; --warn-bg:#f8ebc9; --bad:#a63a2a; --bad-bg:#f6e0dc;
+  --f-display:"Schibsted Grotesk","Segoe UI",system-ui,sans-serif;
+  --f-body:"Public Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101316; --surface:#171b1f; --sunk:#1e2328; --ink:#e7e9e3; --muted:#9aa1aa; --line:#2a3036;
+  --accent:#45b5a6; --accent-ink:#0b1513; --accent-soft:#16302c;
+  --ok:#6fc893; --ok-bg:#14291c; --warn:#e6b450; --warn-bg:#2c2310; --bad:#ee8a76; --bad-bg:#33201c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101316; --surface:#171b1f; --sunk:#1e2328; --ink:#e7e9e3; --muted:#9aa1aa; --line:#2a3036;
+  --accent:#45b5a6; --accent-ink:#0b1513; --accent-soft:#16302c;
+  --ok:#6fc893; --ok-bg:#14291c; --warn:#e6b450; --warn-bg:#2c2310; --bad:#ee8a76; --bad-bg:#33201c; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:20px;padding-block:28px 72px;display:flex;flex-direction:column;gap:44px}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;letter-spacing:-0.01em}
+h1{font-size:clamp(2rem,5vw,3.25rem);line-height:1.04;font-weight:800}
+h2{font-size:1.45rem;font-weight:700}
+h3{font-size:1.02rem;font-weight:700}
+p{margin:0}
+code,.mono{font-family:var(--f-mono);font-size:.86em}
+a{color:var(--accent)}
+.muted{color:var(--muted)}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.15rem;display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none}
+.brand svg{width:26px;height:26px}
+.navr{display:flex;align-items:center;gap:16px;font-size:14px;flex-wrap:wrap}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.lang button{font:inherit;font-size:13px;padding:5px 12px;border:0;background:transparent;color:var(--muted);cursor:pointer}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:32px;align-items:end}
+.hero p.lede{font-size:17px;color:var(--muted);max-width:60ch;margin-top:14px}
+.deadline{border-left:3px solid var(--warn);padding:4px 0 4px 18px}
+.deadline .days{font-family:var(--f-display);font-weight:800;font-size:clamp(3rem,8vw,4.6rem);line-height:1;font-variant-numeric:tabular-nums}
+.deadline .lbl{font-size:14px;color:var(--muted);max-width:32ch}
+.bench{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.45fr);gap:24px;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.drop{border:1.5px dashed var(--line);border-radius:10px;background:var(--sunk);padding:26px 18px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;transition:border-color .15s,background .15s}
+.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop strong{font-family:var(--f-display);font-size:1.05rem}
+.btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+button.b, label.b{font:inherit;font-size:14px;font-weight:600;padding:9px 14px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+button.b.primary, label.b.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button.b:disabled{opacity:.5;cursor:default}
+button.b:focus-visible,label.b:focus-within,.lang button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.steps-how{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:s}
+.steps-how li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;counter-increment:s}
+.steps-how li::before{content:counter(s);font-family:var(--f-mono);font-size:12px;width:24px;height:24px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted)}
+.privacy{font-size:13px;color:var(--muted);display:flex;gap:8px;align-items:flex-start}
+.privacy svg{flex:none;width:16px;height:16px;margin-top:2px}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.tile{background:var(--sunk);border-radius:8px;padding:12px}
+.tile .n{font-family:var(--f-display);font-weight:800;font-size:1.6rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.tile .t{font-size:12.5px;color:var(--muted)}
+.rhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.wf{border-top:1px solid var(--line)}
+.wf:first-of-type{border-top:0}
+.wf summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 2px}
+.wf summary::-webkit-details-marker{display:none}
+.wf .name{font-weight:600;overflow-wrap:anywhere}
+.wf .meta{font-size:12.5px;color:var(--muted);font-family:var(--f-mono)}
+.pill{font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;white-space:nowrap}
+.pill.ok{color:var(--ok);background:var(--ok-bg)} .pill.warn{color:var(--warn);background:var(--warn-bg)} .pill.bad{color:var(--bad);background:var(--bad-bg)}
+.wf .body{padding:0 2px 16px;display:flex;flex-direction:column;gap:10px}
+.files{display:flex;flex-direction:column;gap:6px}
+.file{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;background:var(--sunk);border-radius:8px;padding:8px 10px}
+.file code{overflow-wrap:anywhere}
+.todo{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.todo .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:6px}
+.row-btns{display:flex;gap:8px;flex-wrap:wrap}
+.row-btns button{font-size:13px;padding:6px 11px}
+.empty{color:var(--muted);font-size:14px;padding:6px 0}
+.notice{font-size:13.5px;padding:10px 12px;border-radius:8px;background:var(--sunk)}
+.notice.err{background:var(--bad-bg);color:var(--bad)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:8px;font-size:14px;z-index:10}
+.ref{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.ref section{display:flex;flex-direction:column;gap:10px;min-width:0}
+.ref ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--f-mono);font-size:11.5px;padding:3px 8px;border-radius:6px;background:var(--sunk);color:var(--ink)}
+.service{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px;display:flex;flex-direction:column;gap:18px}
+.svc-head{display:flex;flex-direction:column;gap:8px;max-width:70ch}
+.plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.plan{background:var(--sunk);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:4px;border:1px solid transparent}
+.plan.main{border-color:var(--accent);background:var(--accent-soft)}
+.price{font-family:var(--f-display);font-weight:800;font-size:1.7rem;font-variant-numeric:tabular-nums;line-height:1.2}
+.incl{margin:0;padding-left:18px;display:flex;flex-wrap:wrap;gap:6px 28px;font-size:14px}
+.contact{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:14px}
+.contact code{font-size:14px;background:var(--sunk);padding:4px 8px;border-radius:6px;user-select:all}
+.small{font-size:13px}
+.faq{display:flex;flex-direction:column;gap:14px;max-width:80ch}
+.faq h3{margin-bottom:4px}
+textarea.code{width:100%;min-height:150px;font-family:var(--f-mono);font-size:12.5px;line-height:1.45;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);padding:10px;resize:vertical}
+textarea.code:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+footer{border-top:1px solid var(--line);padding-top:18px;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+@media (max-width:900px){.hero,.bench,.ref,.plans{grid-template-columns:minmax(0,1fr)} .tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="bar">
+    <a class="brand" href="/">
+      <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="1" y="5" width="10" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="15" y="5" width="10" height="16" rx="2.5" fill="var(--accent)"/><path d="M8 13h10m-3-3 3 3-3 3" stroke="var(--ink)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      MigrateFlows
+    </a>
+    <div class="navr">
+      <a href="/" data-i18n="navPd">Pipedream → n8n</a>
+      <a href="/flowise-to-n8n/" data-i18n="navFw">Flowise → n8n</a>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" id="lang-en" data-lang="en" aria-pressed="true">English</button>
+        <button type="button" id="lang-es" data-lang="es" aria-pressed="false">Español</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="hero">
+    <div>
+      <span class="eyebrow" data-i18n="eyebrow">OpenAI Agent Builder → n8n migration</span>
+      <h1 data-i18n="h1">Move your Agent Builder workflows to n8n before November 30.</h1>
+      <p class="lede" data-i18n="lede">OpenAI is shutting down Agent Builder, and its export is only Agents SDK code. Paste that code (Python or TypeScript) and get an n8n workflow with the same agents, tools, guardrails and if/else logic, ready to import.</p>
+    </div>
+    <div class="deadline" aria-live="polite">
+      <div class="days" id="days">—</div>
+      <div class="lbl" data-i18n="daysLbl">days until Agent Builder shuts down on November 30, 2026. Evals become read-only on October 31.</div>
+    </div>
+  </header>
+
+  <main class="bench">
+    <div class="panel">
+      <h2 data-i18n="inTitle">Your exported code</h2>
+      <label for="code" class="muted small" data-i18n="pasteLbl">Paste the code from Code → Agents SDK (Python or TypeScript):</label>
+      <textarea id="code" class="code" spellcheck="false" placeholder="from agents import Agent, Runner …"></textarea>
+      <div class="btns" style="justify-content:flex-start">
+        <button type="button" class="b primary" id="convert" data-i18n="convertBtn">Convert</button>
+        <label class="b" for="pick-files"><span data-i18n="pickFiles">Or choose files</span><input id="pick-files" type="file" accept=".py,.ts,.js,.mjs,.txt,.zip" multiple hidden></label>
+        <button type="button" class="b" id="sample" data-i18n="sample">Try a sample</button>
+      </div>
+      <ol class="steps-how">
+        <li><div><strong data-i18n="how1t">Export from Agent Builder.</strong> <span class="muted" data-i18n="how1">Open each workflow, choose Code → Agents SDK, pick Python or TypeScript and copy everything.</span></div></li>
+        <li><div><strong data-i18n="how2t">Convert here.</strong> <span class="muted" data-i18n="how2">Each agent becomes an n8n AI Agent with its model, instructions, output schema and tools. Web search, file search and code interpreter stay as OpenAI built-in tools, so your vector stores keep working.</span></div></li>
+        <li><div><strong data-i18n="how3t">Import into n8n.</strong> <span class="muted" data-i18n="how3">Use Import from file, add your OpenAI credential and any MCP or tool credentials from the checklist, and chat with it.</span></div></li>
+      </ol>
+      <p class="privacy"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1 2.5 3v4.5c0 3.4 2.4 6.3 5.5 7.5 3.1-1.2 5.5-4.1 5.5-7.5V3z" fill="none" stroke="currentColor" stroke-width="1.4"/></svg><span data-i18n="privacy">Everything runs in your browser; your code is not uploaded. If your code contains tokens, the converter leaves them out and tells you which credential to create.</span></p>
+    </div>
+
+    <div class="panel" id="results">
+      <div class="rhead">
+        <h2 data-i18n="outTitle">Converted for n8n</h2>
+        <button type="button" class="b primary" id="dl-all" disabled data-i18n="dlAll">Download all (.zip)</button>
+      </div>
+      <div id="status"></div>
+      <div class="tiles" id="tiles" hidden>
+        <div class="tile"><div class="n" id="t-wf">0</div><div class="t" data-i18n="tWf">n8n workflows</div></div>
+        <div class="tile"><div class="n" id="t-agents">0</div><div class="t" data-i18n="tAgents">agents</div></div>
+        <div class="tile"><div class="n" id="t-auto">0%</div><div class="t" data-i18n="tAuto">converted automatically</div></div>
+        <div class="tile"><div class="n" id="t-todo">0</div><div class="t" data-i18n="tTodo">items to check</div></div>
+      </div>
+      <div id="list"><p class="empty" data-i18n="emptyList">Your converted workflows will appear here.</p></div>
+    </div>
+  </main>
+
+  <div class="ref">
+    <section>
+      <h3 data-i18n="r1">Converts automatically</h3>
+      <ul>
+        <li data-i18n="r1a">Agents: name, instructions (also dynamic ones), model, temperature, reasoning effort and output schemas</li>
+        <li data-i18n="r1b">Web search, file search and code interpreter as OpenAI built-in tools in n8n</li>
+        <li data-i18n="r1c">MCP servers as MCP Client tools</li>
+        <li data-i18n="r1d">Guardrails: jailbreak, PII, NSFW, URL filter, off-topic and custom checks</li>
+        <li data-i18n="r1e">If/else, classifiers, while loops, user approval, state and end nodes</li>
+      </ul>
+    </section>
+    <section>
+      <h3 data-i18n="r2">Needs a quick check</h3>
+      <ul>
+        <li data-i18n="r2a">Function tools: the export has no implementation, so they arrive as Code Tools to fill in</li>
+        <li data-i18n="r2b">OpenAI connectors (Gmail, Drive…): swap them for n8n's own app tools</li>
+        <li data-i18n="r2c">Moderation and hallucination guardrails have no direct n8n equivalent</li>
+        <li data-i18n="r2d">Code you edited by hand after exporting may need a look</li>
+      </ul>
+    </section>
+    <section>
+      <h3 data-i18n="r3">Tested on</h3>
+      <p class="small muted" data-i18n="r3a">196 real Agent Builder exports published on GitHub (Python and TypeScript, 437 agents). Every converted workflow passes n8n's own workflow validator.</p>
+    </section>
+  </div>
+
+  <section class="service" id="done-for-you">
+    <div class="svc-head">
+      <span class="eyebrow" data-i18n="svcEyebrow">Done for you</span>
+      <h2 data-i18n="svcTitle">Prefer to hand it off? We migrate your Agent Builder workflows to n8n.</h2>
+      <p class="muted" data-i18n="svcLede">We convert every workflow, implement your function tools, connect your MCP servers and apps, set up credentials with you on a short call and test each agent with real questions before November 30.</p>
+    </div>
+    <div class="plans">
+      <div class="plan"><h3 data-i18n="p1t">Small</h3><div class="price">US$190</div><p class="muted" data-i18n="p1d">Up to 10 workflows</p></div>
+      <div class="plan main"><h3 data-i18n="p2t">Team</h3><div class="price">US$690</div><p class="muted" data-i18n="p2d">Up to 50 workflows</p></div>
+      <div class="plan"><h3 data-i18n="p3t">Large</h3><div class="price" data-i18n="p3p">Custom quote</div><p class="muted" data-i18n="p3d">More than 50 workflows or ChatKit front ends</p></div>
+    </div>
+    <ul class="incl">
+      <li data-i18n="i1">Delivered within 5 business days</li>
+      <li data-i18n="i2">14 days of fixes after you go live</li>
+      <li data-i18n="i3">Runs on your n8n: n8n Cloud or your own server</li>
+    </ul>
+    <div class="contact">
+      <span data-i18n="svcContact">Email</span> <code id="mail">hello@migrateflows.com</code>
+      <button type="button" class="b" id="copy-mail" data-i18n="copyMail">Copy address</button>
+      <span class="muted" data-i18n="svcSend">and tell us how many workflows you have and where you want to run n8n.</span>
+    </div>
+    <p class="small muted"><span data-i18n="noN8n">No n8n account yet?</span> <a id="n8n-link" href="https://n8n.io/" target="_blank" rel="noopener" data-i18n="n8nLink">Start with n8n</a></p>
+  </section>
+
+  <section class="faq">
+    <h2 data-i18n="faqT">Questions</h2>
+    <div><h3 data-i18n="q1">What does OpenAI offer instead?</h3><p class="muted" data-i18n="a1">Two paths: keep the exported Agents SDK code and run it yourself, or rebuild the workflow as a ChatGPT workspace agent (Business, Enterprise and Edu plans). Neither keeps a visual editor you can host.</p></div>
+    <div><h3 data-i18n="q2">Will my vector stores and web search still work?</h3><p class="muted" data-i18n="a2">Yes. n8n's OpenAI chat model supports OpenAI's built-in web search, file search and code interpreter, so the converted agents use the same vector store IDs with your OpenAI API key.</p></div>
+    <div><h3 data-i18n="q3">What about ChatKit?</h3><p class="muted" data-i18n="a3">ChatKit itself is not being shut down, but it needs a backend. n8n's chat trigger gives you a hosted chat page and a webhook you can call from your own front end.</p></div>
+  </section>
+
+  <footer>
+    <p data-i18n="foot1">MigrateFlows is an independent tool, not affiliated with OpenAI or n8n. Free during beta.</p>
+    <p data-i18n="foot2">Review every workflow before you activate it in n8n.</p>
+  </footer>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="/vendor/jszip.min.js"></script>
+<script src="/agentbuilder-parse.js"></script>
+<script src="/agentbuilder-core.js"></script>
+<script id="sample-data" type="application/json">{"support_router.py": "from agents import WebSearchTool, FileSearchTool, HostedMCPTool, Agent, ModelSettings, TResponseInputItem, Runner, RunConfig, trace\nfrom openai import AsyncOpenAI\nfrom types import SimpleNamespace\nfrom guardrails.runtime import load_config_bundle, instantiate_guardrails, run_guardrails\nfrom openai.types.shared.reasoning import Reasoning\nfrom pydantic import BaseModel\n\n# Tool definitions\nfile_search = FileSearchTool(\n  vector_store_ids=[\n    \"vs_example_help_center\"\n  ]\n)\nweb_search_preview = WebSearchTool(\n  search_context_size=\"medium\",\n  user_location={\n    \"type\": \"approximate\"\n  }\n)\nmcp = HostedMCPTool(tool_config={\n  \"type\": \"mcp\",\n  \"server_label\": \"orders\",\n  \"server_url\": \"https://orders.example.com/mcp\",\n  \"allowed_tools\": [\n    \"get_order_status\"\n  ],\n  \"require_approval\": \"never\"\n})\n\n# Shared client for guardrails and file search\nclient = AsyncOpenAI()\nctx = SimpleNamespace(guardrail_llm=client)\n# Guardrails definitions\njailbreak_guardrail_config = {\n  \"guardrails\": [\n    { \"name\": \"Jailbreak\", \"config\": { \"model\": \"gpt-4.1-mini\", \"confidence_threshold\": 0.7 } },\n    { \"name\": \"Contains PII\", \"config\": { \"block\": True, \"entities\": [\"CREDIT_CARD\", \"EMAIL_ADDRESS\"] } }\n  ]\n}\ndef guardrails_has_tripwire(results):\n    return any(getattr(r, \"tripwire_triggered\", False) is True for r in (results or []))\n\nclass ClassifierSchema(BaseModel):\n  topic: str\n\nclassifier = Agent(\n  name=\"Classifier\",\n  instructions=\"\"\"Classify the customer message into one topic: \"orders\" for order status and shipping, \"product\" for questions about the product, \"other\" for anything else.\"\"\",\n  model=\"gpt-4.1-mini\",\n  output_type=ClassifierSchema,\n  model_settings=ModelSettings(\n    temperature=0,\n    store=True\n  )\n)\n\norders_agent = Agent(\n  name=\"Orders agent\",\n  instructions=\"You help customers with their orders. Use the orders tool to look up the status. Be brief.\",\n  model=\"gpt-4.1\",\n  tools=[\n    mcp\n  ],\n  model_settings=ModelSettings(\n    temperature=0.3,\n    store=True\n  )\n)\n\nproduct_agent = Agent(\n  name=\"Product expert\",\n  instructions=\"Answer product questions using the help center documents first and the web only when the documents do not cover it.\",\n  model=\"gpt-5\",\n  tools=[\n    file_search,\n    web_search_preview\n  ],\n  model_settings=ModelSettings(\n    store=True,\n    reasoning=Reasoning(\n      effort=\"low\",\n      summary=\"auto\"\n    )\n  )\n)\n\n\nclass WorkflowInput(BaseModel):\n  input_as_text: str\n\n\n# Main code entrypoint\nasync def run_workflow(workflow_input: WorkflowInput):\n  with trace(\"Support router\"):\n    state = {}\n    workflow = workflow_input.model_dump()\n    conversation_history: list[TResponseInputItem] = [\n      {\n        \"role\": \"user\",\n        \"content\": [\n          {\n            \"type\": \"input_text\",\n            \"text\": workflow[\"input_as_text\"]\n          }\n        ]\n      }\n    ]\n    guardrails_inputtext = workflow[\"input_as_text\"]\n    guardrails_result = await run_guardrails(ctx, guardrails_inputtext, \"text/plain\", instantiate_guardrails(load_config_bundle(jailbreak_guardrail_config)), suppress_tripwire=True)\n    guardrails_hastripwire = guardrails_has_tripwire(guardrails_result)\n    if guardrails_hastripwire:\n      return {\n        \"message\": \"Sorry, I can't help with that request.\"\n      }\n    else:\n      classifier_result_temp = await Runner.run(\n        classifier,\n        input=[\n          {\n            \"role\": \"user\",\n            \"content\": [\n              {\n                \"type\": \"input_text\",\n                \"text\": workflow[\"input_as_text\"]\n              }\n            ]\n          }\n        ],\n        run_config=RunConfig(trace_metadata={\n          \"__trace_source__\": \"agent-builder\",\n          \"workflow_id\": \"wf_example_support_router\"\n        })\n      )\n      classifier_result = {\n        \"output_text\": classifier_result_temp.final_output.json(),\n        \"output_parsed\": classifier_result_temp.final_output.model_dump()\n      }\n      if classifier_result[\"output_parsed\"][\"topic\"] == \"orders\":\n        orders_agent_result_temp = await Runner.run(\n          orders_agent,\n          input=[\n            *conversation_history\n          ],\n          run_config=RunConfig(trace_metadata={\n            \"__trace_source__\": \"agent-builder\",\n            \"workflow_id\": \"wf_example_support_router\"\n          })\n        )\n        conversation_history.extend([item.to_input_item() for item in orders_agent_result_temp.new_items])\n        orders_agent_result = {\n          \"output_text\": orders_agent_result_temp.final_output_as(str)\n        }\n        return orders_agent_result\n      elif classifier_result[\"output_parsed\"][\"topic\"] == \"product\":\n        product_agent_result_temp = await Runner.run(\n          product_agent,\n          input=[\n            *conversation_history\n          ],\n          run_config=RunConfig(trace_metadata={\n            \"__trace_source__\": \"agent-builder\",\n            \"workflow_id\": \"wf_example_support_router\"\n          })\n        )\n        conversation_history.extend([item.to_input_item() for item in product_agent_result_temp.new_items])\n        product_agent_result = {\n          \"output_text\": product_agent_result_temp.final_output_as(str)\n        }\n        return product_agent_result\n      else:\n        return {\n          \"message\": \"Thanks! A person from our team will get back to you.\"\n        }\n", "refund_approval.ts": "import { tool, Agent, AgentInputItem, Runner, withTrace } from \"@openai/agents\";\nimport { z } from \"zod\";\n\n// Tool definitions\nconst lookupOrder = tool({\n  name: \"lookupOrder\",\n  description: \"Get an order by its number\",\n  parameters: z.object({\n    orderNumber: z.string()\n  }),\n  execute: async (input: {orderNumber: string}) => {\n    // TODO: Unimplemented\n  },\n});\nconst RefundCheckSchema = z.object({ eligible: z.boolean(), reason: z.string() });\nconst refundChecker = new Agent({\n  name: \"Refund checker\",\n  instructions: \"Decide if the customer's refund request is eligible under a 30-day policy. Look up the order first.\",\n  model: \"gpt-4.1\",\n  tools: [\n    lookupOrder\n  ],\n  outputType: RefundCheckSchema,\n  modelSettings: {\n    temperature: 0.2,\n    store: true\n  }\n});\n\nconst replyWriter = new Agent({\n  name: \"Reply writer\",\n  instructions: \"Write a short, kind reply to the customer confirming that the refund was approved.\",\n  model: \"gpt-4.1-mini\",\n  modelSettings: {\n    store: true\n  }\n});\n\nconst approvalRequest = (message: string) => {\n\n  // TODO: Implement\n  return true;\n}\n\ntype WorkflowInput = { input_as_text: string };\n\n\n// Main code entrypoint\nexport const runWorkflow = async (workflow: WorkflowInput) => {\n  return await withTrace(\"Refund approvals\", async () => {\n    const state = {\n\n    };\n    const conversationHistory: AgentInputItem[] = [\n      { role: \"user\", content: [{ type: \"input_text\", text: workflow.input_as_text }] }\n    ];\n    const runner = new Runner({\n      traceMetadata: {\n        __trace_source__: \"agent-builder\",\n        workflow_id: \"wf_example_refunds\"\n      }\n    });\n    const refundCheckerResultTemp = await runner.run(\n      refundChecker,\n      [\n        ...conversationHistory\n      ]\n    );\n    conversationHistory.push(...refundCheckerResultTemp.newItems.map((item) => item.rawItem));\n\n    if (!refundCheckerResultTemp.finalOutput) {\n        throw new Error(\"Agent result is undefined\");\n    }\n\n    const refundCheckerResult = {\n      output_text: JSON.stringify(refundCheckerResultTemp.finalOutput),\n      output_parsed: refundCheckerResultTemp.finalOutput\n    };\n    if (refundCheckerResult.output_parsed.eligible == true) {\n      const approvalMessage = \"Approve this refund?\";\n\n      if (approvalRequest(approvalMessage)) {\n          const replyWriterResultTemp = await runner.run(\n            replyWriter,\n            [\n              ...conversationHistory\n            ]\n          );\n          conversationHistory.push(...replyWriterResultTemp.newItems.map((item) => item.rawItem));\n\n          if (!replyWriterResultTemp.finalOutput) {\n              throw new Error(\"Agent result is undefined\");\n          }\n\n          const replyWriterResult = {\n            output_text: replyWriterResultTemp.finalOutput ?? \"\"\n          };\n          return replyWriterResult;\n      } else {\n          return { message: \"The refund was not approved.\" };\n      }\n    } else {\n      return { message: refundCheckerResult.output_parsed.reason };\n    }\n  });\n}\n"}</script>
+<script>
+(() => {
+  const I18N = { es: {
+    navPd: "Pipedream → n8n", navFw: "Flowise → n8n",
+    eyebrow: "Migración Agent Builder de OpenAI → n8n",
+    h1: "Mudá tus flujos del Agent Builder a n8n antes del 30 de noviembre.",
+    lede: "OpenAI apaga el Agent Builder y su export es solo código del Agents SDK. Pegá ese código (Python o TypeScript) y recibí un flujo de n8n con los mismos agentes, herramientas, guardrails y lógica if/else, listo para importar.",
+    daysLbl: "días hasta que el Agent Builder se apague el 30 de noviembre de 2026. Los evals quedan en solo lectura el 31 de octubre.",
+    inTitle: "Tu código exportado", pasteLbl: "Pegá el código de Code → Agents SDK (Python o TypeScript):",
+    convertBtn: "Convertir", pickFiles: "O elegí archivos", sample: "Probar un ejemplo",
+    how1t: "Exportá desde el Agent Builder.", how1: "Abrí cada flujo, elegí Code → Agents SDK, Python o TypeScript, y copiá todo.",
+    how2t: "Convertí acá.", how2: "Cada agente pasa a un AI Agent de n8n con su modelo, instrucciones, esquema de salida y herramientas. La búsqueda web, la búsqueda en archivos y el intérprete de código siguen siendo herramientas integradas de OpenAI, así que tus vector stores siguen andando.",
+    how3t: "Importá en n8n.", how3: "Usá Import from file, cargá tu credencial de OpenAI y las de MCP o herramientas según la lista, y chateá.",
+    privacy: "Todo corre en tu navegador; tu código no se sube. Si tu código tiene tokens, el convertidor los deja afuera y te dice qué credencial crear.",
+    outTitle: "Convertido para n8n", dlAll: "Descargar todo (.zip)",
+    tWf: "flujos de n8n", tAgents: "agentes", tAuto: "convertido automáticamente", tTodo: "cosas para revisar",
+    emptyList: "Tus flujos convertidos van a aparecer acá.",
+    r1: "Se convierte solo",
+    r1a: "Agentes: nombre, instrucciones (también las dinámicas), modelo, temperatura, esfuerzo de razonamiento y esquemas de salida",
+    r1b: "Búsqueda web, búsqueda en archivos e intérprete de código como herramientas integradas de OpenAI en n8n",
+    r1c: "Servidores MCP como herramientas MCP Client",
+    r1d: "Guardrails: jailbreak, PII, NSFW, filtro de URLs, fuera de tema y chequeos propios",
+    r1e: "If/else, clasificadores, bucles while, aprobación humana, estado y nodos de fin",
+    r2: "Requiere una revisión rápida",
+    r2a: "Function tools: el export no trae su implementación, así que llegan como Code Tools para completar",
+    r2b: "Conectores de OpenAI (Gmail, Drive…): cambialos por las herramientas de apps de n8n",
+    r2c: "Los guardrails de moderación y alucinaciones no tienen equivalente directo en n8n",
+    r2d: "El código que editaste a mano después de exportar puede necesitar una mirada",
+    r3: "Probado con", r3a: "196 exports reales del Agent Builder publicados en GitHub (Python y TypeScript, 437 agentes). Todos los flujos convertidos pasan el validador de flujos de n8n.",
+    svcEyebrow: "Lo hacemos por vos",
+    svcTitle: "¿Preferís delegarlo? Migramos tus flujos del Agent Builder a n8n.",
+    svcLede: "Convertimos cada flujo, implementamos tus function tools, conectamos tus servidores MCP y apps, configuramos credenciales con vos en una llamada corta y probamos cada agente con preguntas reales antes del 30 de noviembre.",
+    p1t: "Chico", p1d: "Hasta 10 flujos", p2t: "Equipo", p2d: "Hasta 50 flujos", p3t: "Grande", p3p: "Presupuesto a medida", p3d: "Más de 50 flujos o frontends con ChatKit",
+    i1: "Entrega en 5 días hábiles", i2: "14 días de arreglos después de salir en vivo", i3: "Corre en tu n8n: n8n Cloud o tu propio servidor",
+    svcContact: "Escribí a", copyMail: "Copiar dirección", svcSend: "y contanos cuántos flujos tenés y dónde querés correr n8n.",
+    noN8n: "¿Todavía no tenés n8n?", n8nLink: "Empezá con n8n",
+    faqT: "Preguntas",
+    q1: "¿Qué ofrece OpenAI a cambio?", a1: "Dos caminos: quedarte con el código del Agents SDK y correrlo vos, o rearmar el flujo como agente de un workspace de ChatGPT (planes Business, Enterprise y Edu). Ninguno conserva un editor visual que puedas alojar.",
+    q2: "¿Mis vector stores y la búsqueda web siguen andando?", a2: "Sí. El modelo de chat de OpenAI en n8n soporta la búsqueda web, la búsqueda en archivos y el intérprete de código integrados de OpenAI, así que los agentes convertidos usan los mismos IDs de vector store con tu API key.",
+    q3: "¿Y ChatKit?", a3: "ChatKit no se apaga, pero necesita un backend. El disparador de chat de n8n te da una página de chat alojada y un webhook que podés llamar desde tu propio frontend.",
+    foot1: "MigrateFlows es una herramienta independiente, sin relación con OpenAI ni n8n. Gratis durante la beta.",
+    foot2: "Revisá cada flujo antes de activarlo en n8n.",
+    reading: "Leyendo archivos…", converting: "Convirtiendo…", empty: "Pegá el código o elegí archivos primero.",
+    none: "No encontré código exportado del Agent Builder. Tiene que tener agentes (Agent / new Agent) y la función run_workflow / runWorkflow.",
+    failed: "No pude convertirlo: ", sampleLoaded: "Ejemplo cargado: 2 flujos escritos para esta página (no son tus datos).",
+    ready: "Listo", attention: "Revisar", blocked: "Falta algo a mano",
+    copy: "Copiar para n8n", dl: "Descargar .json", copied: "Copiado. Pegalo en un lienzo vacío de n8n.", copyFail: "No se pudo copiar. Usá Descargar .json.",
+    saved: "Descarga lista.", declined: "Descarga cancelada.", dlUnavailable: "Las descargas no están disponibles en esta vista; usá Copiar para n8n.",
+    kManual: "A mano", kReview: "Revisar", kDone: "Hecho", kCred: "Credencial", nothing: "Nada para hacer a mano.", mailCopied: "Dirección copiada.", agentsW: "agentes",
+  } };
+  const EN = {};
+  document.querySelectorAll("[data-i18n]").forEach((el) => { EN[el.dataset.i18n] = el.textContent; });
+  Object.assign(EN, {
+    reading: "Reading files…", converting: "Converting…", empty: "Paste the code or choose files first.",
+    none: "I couldn't find Agent Builder exported code. It needs agents (Agent / new Agent) and the run_workflow / runWorkflow function.",
+    failed: "Couldn't convert it: ", sampleLoaded: "Sample loaded: 2 workflows written for this page (not your data).",
+    ready: "Ready", attention: "Check", blocked: "Needs manual work",
+    copy: "Copy for n8n", dl: "Download .json", copied: "Copied. Paste it onto an empty n8n canvas.", copyFail: "Couldn't copy. Use Download .json instead.",
+    saved: "Download ready.", declined: "Download cancelled.", dlUnavailable: "Downloads aren't available in this view; use Copy for n8n.",
+    kManual: "By hand", kReview: "Check", kDone: "Done", kCred: "Credential", nothing: "Nothing to do by hand.", mailCopied: "Address copied.", agentsW: "agents",
+  });
+  let lang = "en";
+  try { lang = localStorage.getItem("migrateflows-lang") || ((navigator.language || "").startsWith("es") ? "es" : "en"); } catch (e) {}
+  const t = (k) => (lang === "es" && I18N.es[k]) || EN[k] || k;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  function applyLang() {
+    document.documentElement.lang = lang;
+    document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll(".lang button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+    render();
+  }
+  document.querySelectorAll(".lang button").forEach((b) => b.addEventListener("click", () => {
+    lang = b.dataset.lang;
+    try { localStorage.setItem("migrateflows-lang", lang); } catch (e) {}
+    applyLang();
+  }));
+  const end = Date.UTC(2026, 10, 30, 23, 59, 59);
+  $("days").textContent = Math.max(0, Math.ceil((end - Date.now()) / 86400000));
+
+  let result = null, statusKey = null, statusExtra = "", statusErr = false;
+  function toast(msg) { const el = $("toast"); el.textContent = msg; el.hidden = false; clearTimeout(toast._t); toast._t = setTimeout(() => { el.hidden = true; }, 3200); }
+  function setStatus(key, err, extra) { statusKey = key; statusExtra = extra || ""; statusErr = !!err; render(); }
+  const todo = (w) => new Set(w.report.filter((r) => r.level !== "ok").map((r) => r.key + JSON.stringify(r.args))).size;
+  const stateOf = (w) => (w.report.some((r) => r.level === "manual") ? "bad" : w.report.some((r) => r.level === "adjust" && r.key !== "credential") ? "warn" : "ok");
+  function render() {
+    $("status").innerHTML = statusKey ? `<p class="notice${statusErr ? " err" : ""}">${esc(t(statusKey) + statusExtra)}</p>` : "";
+    if (!result || !result.workflows.length) { $("tiles").hidden = true; $("dl-all").disabled = true; $("list").innerHTML = `<p class="empty">${esc(t("emptyList"))}</p>`; return; }
+    const W = result.workflows;
+    $("tiles").hidden = false; $("dl-all").disabled = false;
+    $("t-wf").textContent = W.length;
+    $("t-agents").textContent = result.summary.agents;
+    $("t-auto").textContent = Math.round(result.summary.coverage * 100) + "%";
+    $("t-todo").textContent = W.reduce((a, w) => a + todo(w), 0);
+    const order = { manual: 0, adjust: 1, ok: 2 };
+    $("list").innerHTML = W.map((w, i) => {
+      const s = stateOf(w);
+      const items = w.report.slice().sort((a, b) => (a.key === "credential") - (b.key === "credential") || order[a.level] - order[b.level])
+        .map((r) => `<li><span class="k">${t(r.key === "credential" ? "kCred" : r.level === "manual" ? "kManual" : r.level === "adjust" ? "kReview" : "kDone")}</span>${esc(result.noteText(r, lang))}</li>`);
+      return `<details class="wf"${W.length === 1 ? " open" : ""}>
+        <summary><div><div class="name">${esc(w.name)}</div><div class="meta">${esc(w.lang === "ts" ? "TypeScript" : "Python")} &middot; ${w.agents} ${t("agentsW")} &middot; ${Math.round(w.coverage * 100)}%</div></div>
+          <span class="pill ${s}">${t(s === "ok" ? "ready" : s === "warn" ? "attention" : "blocked")}</span></summary>
+        <div class="body">
+          <div class="files"><div class="file"><code>${esc(w.fileName)}</code><div class="row-btns"><button type="button" class="b" data-copy="${i}">${t("copy")}</button><button type="button" class="b" data-dl="${i}">${t("dl")}</button></div></div></div>
+          ${items.length ? `<ul class="todo">${items.join("")}</ul>` : `<p class="muted">${t("nothing")}</p>`}
+        </div></details>`;
+    }).join("");
+  }
+  let downloadsCap;
+  const capReady = (window.claude && window.claude.use ? window.claude.use("downloads") : Promise.resolve(null)).then((d) => { downloadsCap = d; }).catch(() => { downloadsCap = null; });
+  async function save(filename, data) {
+    await Promise.race([capReady, new Promise((r) => setTimeout(r, 1500))]);
+    if (downloadsCap) { try { await downloadsCap.save({ filename, data }); toast(t("saved")); } catch (e) { toast(e && e.code === "declined" ? t("declined") : t("dlUnavailable")); } return; }
+    if (window.claude) { toast(t("dlUnavailable")); return; }
+    const url = URL.createObjectURL(data instanceof Blob ? data : new Blob([data], { type: "application/json" }));
+    const a = document.createElement("a"); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+  $("list").addEventListener("click", async (e) => {
+    const c = e.target.closest("[data-copy]"), d = e.target.closest("[data-dl]");
+    if (c) { const w = result.workflows[Number(c.dataset.copy)]; try { await navigator.clipboard.writeText(JSON.stringify(w.n8n, null, 1)); toast(t("copied")); } catch (err) { toast(t("copyFail")); } }
+    if (d) { const w = result.workflows[Number(d.dataset.dl)]; save(w.fileName, JSON.stringify(w.n8n, null, 1)); }
+  });
+  $("dl-all").addEventListener("click", async () => {
+    const zip = new JSZip();
+    for (const w of result.workflows) zip.file(w.fileName, JSON.stringify(w.n8n, null, 1));
+    zip.file("MIGRATION_REPORT.md", result.reportMarkdown("en"));
+    zip.file("INFORME_MIGRACION.md", result.reportMarkdown("es"));
+    save("agent-builder-to-n8n.zip", await zip.generateAsync({ type: "blob" }));
+  });
+  async function run(files, sampleNote) {
+    setStatus("converting");
+    await new Promise((r) => setTimeout(r, 30));
+    try {
+      result = abmigra.convert(files, { lang });
+      if (!result.workflows.length) { result = null; setStatus("none", true); return; }
+      setStatus(sampleNote ? "sampleLoaded" : null);
+    } catch (e) { result = null; setStatus("failed", true, e.message); }
+  }
+  $("convert").addEventListener("click", () => {
+    const code = $("code").value;
+    if (!code.trim()) { setStatus("empty", true); return; }
+    run({ "pasted-code.txt": code });
+  });
+  async function filesFromList(list) {
+    const out = {};
+    for (const f of list) {
+      if (/\.zip$/i.test(f.name)) { const zip = await JSZip.loadAsync(f); for (const [p, z] of Object.entries(zip.files)) if (!z.dir && /\.(py|ts|js|mjs|txt)$/i.test(p)) out[p] = await z.async("string"); }
+      else if (f.size < 2e6) out[f.name] = await f.text();
+    }
+    return out;
+  }
+  $("pick-files").addEventListener("change", async (e) => { if (!e.target.files.length) return; setStatus("reading"); try { run(await filesFromList([...e.target.files])); } catch (err) { setStatus("failed", true, err.message); } });
+  let SAMPLE = {};
+  try { SAMPLE = JSON.parse($("sample-data").textContent); } catch (e) {}
+  $("sample").addEventListener("click", () => { $("code").value = SAMPLE[Object.keys(SAMPLE)[0]] || ""; run(SAMPLE, true); });
+  $("copy-mail").addEventListener("click", async () => {
+    const m = $("mail").textContent;
+    try { await navigator.clipboard.writeText(m); toast(t("mailCopied")); }
+    catch (e) { const r = document.createRange(); r.selectNodeContents($("mail")); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+  });
+  applyLang();
+  $("code").value = SAMPLE[Object.keys(SAMPLE)[0]] || "";
+  run(SAMPLE, true);
+})();
+</script>
+
+</body>
+</html>

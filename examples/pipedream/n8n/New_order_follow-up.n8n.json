@@ -1,0 +1,259 @@
+{
+ "name": "New order follow-up",
+ "nodes": [
+  {
+   "name": "start",
+   "parameters": {},
+   "type": "n8n-nodes-base.manualTrigger",
+   "typeVersion": 1,
+   "id": "14ecd0ff-e683-4b03-b8b4-dc9221a3ae00",
+   "position": [
+    0,
+    300
+   ]
+  },
+  {
+   "name": "trigger",
+   "parameters": {
+    "jsCode": "// Recreates the shape of Pipedream's trigger event (steps.trigger.event). pdmigra.\nconst now = new Date();\nconst fmt = (d) => ({ iso8601: { timestamp: d.toISOString() }, timezone: 'UTC' });\nreturn [{ json: { ...($input.first()?.json || {}), timestamp: Math.floor(now.getTime() / 1000), timezone_configured: fmt(now), timezone_utc: fmt(now), __context: { ts: now.toISOString(), id: $execution.id, workflow_id: $workflow.id } } }];"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "id": "7dc4127f-93dd-4401-801d-4404f3c15c6e",
+   "position": [
+    240,
+    300
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "// Converted from Pipedream step \"normalize\" by pdmigra.\nconst __node = this;\nconst __try = (f, d) => { try { const v = f(); return v === undefined ? d : v; } catch (e) { return d; } };\nconst __safe = (n) => { try { return $(n).first().json; } catch (e) { return undefined; } };\nconst __stepOut = (n) => { const j = __safe(n); return j && typeof j === 'object' && !Array.isArray(j) ? { ...j, $return_value: j.$return_value !== undefined ? j.$return_value : j } : { $return_value: j }; };\nconst __secret = (k) => { try { if (typeof $vars !== 'undefined' && $vars[k] !== undefined) return $vars[k]; } catch (e) {} try { return $env[k]; } catch (e) { return undefined; } };\nconst __app = (name) => ({ $auth: new Proxy({}, { get: (_, f) => __secret(`${name}_${String(f)}`.toUpperCase()) }) });\nconst __http = async (cfg, full) => {\n  const r = await __node.helpers.httpRequest({ method: (cfg.method || 'GET').toUpperCase(), url: cfg.url, headers: cfg.headers,\n    qs: cfg.params, body: cfg.data, json: true, returnFullResponse: !!full });\n  return full ? { data: r.body, status: r.statusCode, headers: r.headers } : r;\n};\nconst axios = async ($, cfg) => __http(typeof $ === 'object' && $ && $.url ? $ : cfg);\nconst __store = (name) => {\n  const sd = $getWorkflowStaticData('global');\n  sd[name] = sd[name] || {};\n  const m = sd[name];\n  return { get: async (k) => m[k], set: async (k, v) => { m[k] = v; }, has: async (k) => k in m,\n    delete: async (k) => { delete m[k]; }, keys: async () => Object.keys(m),\n    entries: async () => Object.entries(m).map(([key, value]) => ({ key, value })),\n    clear: async () => { for (const k of Object.keys(m)) delete m[k]; } };\n};\n// ---- original code (imports adapted) ----\nconst __component = ({\n  async run({ steps, $ }) {\n    const o = steps.trigger.event.body || {};\n    const rate = await axios($, { url: \"https://api.example.com/fx?to=USD\" }).catch(() => ({ rate: 1 }));\n    const total = Math.round((o.amount || 0) * (rate.rate || 1) * 100) / 100;\n    $.export(\"$summary\", `Normalized order ${o.id}`);\n    return { name: o.name, email: o.email, total, row: [o.id, o.name, o.email, total] };\n  },\n});\n;\n// ---- Pipedream-style execution ----\nconst steps = {\n  trigger: (() => { const t = __safe('trigger') || {}; const { __context, ...event } = t; return { event, context: __context || {} }; })(),\n\n};\nconst __exports = {};\nlet __response = null;\nclass __Exit extends Error {}\nconst __pd = {\n  export: (k, v) => { __exports[k] = v; },\n  respond: async (r) => { __response = r; },\n  flow: { exit: (r) => { throw new __Exit(r || 'exit'); },\n    delay: () => { throw new Error('$.flow.delay: use a Wait node'); },\n    rerun: () => { throw new Error('$.flow.rerun has no n8n equivalent'); } },\n};\nconst __ctx = {};\n\n\nlet __ret;\ntry {\n  __ret = await __component.run.call(__ctx, { steps, $: __pd });\n} catch (e) {\n  // A step that answered the webhook and then exited still has to send that answer before the flow stops.\n  if (e instanceof __Exit) return __response ? [{ json: { __respond: __response, __exit: true } }] : [];\n  throw e;\n}\nconst { $summary, ...__exp } = __exports;\nreturn [{ json: { $return_value: __ret === undefined ? null : __ret, ...__exp, ...(__response ? { __respond: __response } : {}) } }];\n"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "name": "normalize",
+   "id": "175388e7-aba2-4169-8a63-f5ee17a7c0aa",
+   "position": [
+    480,
+    300
+   ]
+  },
+  {
+   "parameters": {
+    "method": "POST",
+    "url": "https://sheets.googleapis.com/v4/spreadsheets/1sAmPlE/values/'Orders':append",
+    "authentication": "predefinedCredentialType",
+    "options": {},
+    "nodeCredentialType": "googleSheetsOAuth2Api",
+    "sendQuery": true,
+    "specifyQuery": "keypair",
+    "queryParameters": {
+     "parameters": [
+      {
+       "name": "valueInputOption",
+       "value": "USER_ENTERED"
+      },
+      {
+       "name": "insertDataOption",
+       "value": "INSERT_ROWS"
+      }
+     ]
+    },
+    "sendBody": true,
+    "contentType": "json",
+    "specifyBody": "json",
+    "jsonBody": "={{ ({ values: [(() => { const v = ($('normalize').first().json.$return_value.row); if (Array.isArray(v)) return v; try { const p = JSON.parse(v); return Array.isArray(p) ? p : [p]; } catch (e) { return [v]; } })()] }) }}"
+   },
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "name": "add_row",
+   "id": "784ada55-ec59-4ad3-87fa-c3eac72d4f19",
+   "position": [
+    720,
+    300
+   ]
+  },
+  {
+   "parameters": {
+    "method": "POST",
+    "url": "https://slack.com/api/chat.postMessage",
+    "authentication": "predefinedCredentialType",
+    "options": {},
+    "nodeCredentialType": "slackOAuth2Api",
+    "sendBody": true,
+    "contentType": "json",
+    "specifyBody": "json",
+    "jsonBody": "={{ ((o) => JSON.parse(JSON.stringify(o, (k, v) => (v === null ? undefined : v))))({\"channel\": \"C0SAMPLE\", \"text\": `New order from ${$('normalize').first().json.$return_value.name}: ${$('normalize').first().json.$return_value.total} USD`}) }}"
+   },
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "name": "notify_team",
+   "id": "76c487c5-2b41-4046-910e-a4ade0cb73f7",
+   "position": [
+    960,
+    300
+   ]
+  },
+  {
+   "name": "thank_you__mime",
+   "parameters": {
+    "jsCode": "// Builds the email for the Gmail API. pdmigra.\nconst __node = this;\nconst __try = (f, d) => { try { const v = f(); return v === undefined ? d : v; } catch (e) { return d; } };\nconst __safe = (n) => { try { return $(n).first().json; } catch (e) { return undefined; } };\nconst __stepOut = (n) => { const j = __safe(n); return j && typeof j === 'object' && !Array.isArray(j) ? { ...j, $return_value: j.$return_value !== undefined ? j.$return_value : j } : { $return_value: j }; };\nconst __secret = (k) => { try { if (typeof $vars !== 'undefined' && $vars[k] !== undefined) return $vars[k]; } catch (e) {} try { return $env[k]; } catch (e) { return undefined; } };\nconst __app = (name) => ({ $auth: new Proxy({}, { get: (_, f) => __secret(`${name}_${String(f)}`.toUpperCase()) }) });\nconst steps = {\n  trigger: (() => { const t = __safe('trigger') || {}; const { __context, ...event } = t; return { event, context: __context || {} }; })(),\n  \"normalize\": __stepOut(\"normalize\"),\n  \"add_row\": __stepOut(\"add_row\"),\n  \"notify_team\": __stepOut(\"notify_team\"),\n};\nconst f = {\n  \"to\": __try(() => ([(steps.normalize.$return_value.email)]), undefined),\n  \"cc\": __try(() => (null), undefined),\n  \"bcc\": __try(() => (null), undefined),\n  \"subject\": __try(() => (`Thanks for your order, ${steps.normalize.$return_value.name}`), undefined),\n  \"body\": __try(() => (\"We received your order and will ship it soon.\"), undefined),\n  \"bodyType\": __try(() => (null), undefined),\n  \"fromName\": __try(() => (null), undefined),\n  \"replyTo\": __try(() => (null), undefined)\n};\nconst list = (v) => (Array.isArray(v) ? v.join(', ') : v || '');\nconst enc = (t) => '=?UTF-8?B?' + Buffer.from(String(t), 'utf8').toString('base64') + '?=';\nconst lines = [];\nif (f.fromName) lines.push('From: ' + enc(f.fromName) + ' <me>');\nlines.push('To: ' + list(f.to));\nif (f.cc) lines.push('Cc: ' + list(f.cc));\nif (f.bcc) lines.push('Bcc: ' + list(f.bcc));\nif (f.replyTo) lines.push('Reply-To: ' + f.replyTo);\nlines.push('Subject: ' + enc(f.subject || ''));\nlines.push('MIME-Version: 1.0');\nlines.push('Content-Type: ' + (f.bodyType === 'html' ? 'text/html' : 'text/plain') + '; charset=UTF-8');\nlines.push('Content-Transfer-Encoding: base64', '', Buffer.from(String(f.body || ''), 'utf8').toString('base64'));\nconst raw = Buffer.from(lines.join('\\r\\n'), 'utf8').toString('base64').replace(/\\+/g, '-').replace(/\\//g, '_').replace(/=+$/, '');\nreturn [{ json: { raw } }];"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "id": "ae2efad0-94b8-4eaf-8a7c-a53f1ca90a85",
+   "position": [
+    1200,
+    300
+   ]
+  },
+  {
+   "parameters": {
+    "method": "POST",
+    "url": "https://gmail.googleapis.com/gmail/v1/users/me/messages/send",
+    "authentication": "predefinedCredentialType",
+    "options": {},
+    "nodeCredentialType": "gmailOAuth2",
+    "sendBody": true,
+    "contentType": "json",
+    "specifyBody": "json",
+    "jsonBody": "={{ ({ raw: $json.raw }) }}"
+   },
+   "type": "n8n-nodes-base.httpRequest",
+   "typeVersion": 4.2,
+   "name": "thank_you",
+   "id": "368ff1fc-2b23-419c-81dd-66c1dace6d78",
+   "position": [
+    1440,
+    300
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "// Pipedream data store action \"data_stores-add-update-record\" re-implemented on n8n static data. pdmigra.\nconst __node = this;\nconst __try = (f, d) => { try { const v = f(); return v === undefined ? d : v; } catch (e) { return d; } };\nconst __safe = (n) => { try { return $(n).first().json; } catch (e) { return undefined; } };\nconst __stepOut = (n) => { const j = __safe(n); return j && typeof j === 'object' && !Array.isArray(j) ? { ...j, $return_value: j.$return_value !== undefined ? j.$return_value : j } : { $return_value: j }; };\nconst __secret = (k) => { try { if (typeof $vars !== 'undefined' && $vars[k] !== undefined) return $vars[k]; } catch (e) {} try { return $env[k]; } catch (e) { return undefined; } };\nconst __app = (name) => ({ $auth: new Proxy({}, { get: (_, f) => __secret(`${name}_${String(f)}`.toUpperCase()) }) });\nconst steps = {\n  trigger: (() => { const t = __safe('trigger') || {}; const { __context, ...event } = t; return { event, context: __context || {} }; })(),\n  \"normalize\": __stepOut(\"normalize\"),\n  \"add_row\": __stepOut(\"add_row\"),\n  \"notify_team\": __stepOut(\"notify_team\"),\n  \"thank_you\": __stepOut(\"thank_you\"),\n};\nconst P = {\n  \"key\": __try(() => ((steps.normalize.$return_value.email)), undefined),\n  \"value\": __try(() => ((steps.normalize.$return_value.total)), undefined)\n};\nconst sd = $getWorkflowStaticData('global');\nsd[\"customers\"] = sd[\"customers\"] || {};\nconst m = sd[\"customers\"];\nconst key = P.key; let value = P.value;\nif (typeof value === 'string') { try { value = JSON.parse(value); } catch (e) {} }\nconst out = (() => { m[key] = value; return value; })();\nreturn [{ json: { $return_value: out === undefined ? null : out } }];"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "name": "remember",
+   "id": "3b5c7983-0268-42a3-847c-8ff4de600277",
+   "position": [
+    1680,
+    300
+   ]
+  },
+  {
+   "parameters": {
+    "jsCode": "// Converted from Pipedream step \"score\" by pdmigra.\nconst __node = this;\nconst __try = (f, d) => { try { const v = f(); return v === undefined ? d : v; } catch (e) { return d; } };\nconst __safe = (n) => { try { return $(n).first().json; } catch (e) { return undefined; } };\nconst __stepOut = (n) => { const j = __safe(n); return j && typeof j === 'object' && !Array.isArray(j) ? { ...j, $return_value: j.$return_value !== undefined ? j.$return_value : j } : { $return_value: j }; };\nconst __secret = (k) => { try { if (typeof $vars !== 'undefined' && $vars[k] !== undefined) return $vars[k]; } catch (e) {} try { return $env[k]; } catch (e) { return undefined; } };\nconst __app = (name) => ({ $auth: new Proxy({}, { get: (_, f) => __secret(`${name}_${String(f)}`.toUpperCase()) }) });\nconst __store = (name) => {\n  const sd = $getWorkflowStaticData('global');\n  sd[name] = sd[name] || {};\n  const m = sd[name];\n  return { get: async (k) => m[k], set: async (k, v) => { m[k] = v; }, has: async (k) => k in m,\n    delete: async (k) => { delete m[k]; }, keys: async () => Object.keys(m),\n    entries: async () => Object.entries(m).map(([key, value]) => ({ key, value })),\n    clear: async () => { for (const k of Object.keys(m)) delete m[k]; } };\n};\n// ---- original code (imports adapted) ----\nconst __component = ({\n  props: { vipThreshold: { type: \"integer\", default: 500 } },\n  async run({ steps, $ }) {\n    const total = steps.normalize.$return_value.total;\n    if (total < (this.vipThreshold || 500)) return $.flow.exit(\"Not a VIP order\");\n    return { vip: true, total };\n  },\n});\n;\n// ---- Pipedream-style execution ----\nconst steps = {\n  trigger: (() => { const t = __safe('trigger') || {}; const { __context, ...event } = t; return { event, context: __context || {} }; })(),\n  \"normalize\": __stepOut(\"normalize\"),\n  \"add_row\": __stepOut(\"add_row\"),\n  \"notify_team\": __stepOut(\"notify_team\"),\n  \"thank_you\": __stepOut(\"thank_you\"),\n  \"remember\": __stepOut(\"remember\"),\n};\nconst __exports = {};\nlet __response = null;\nclass __Exit extends Error {}\nconst __pd = {\n  export: (k, v) => { __exports[k] = v; },\n  respond: async (r) => { __response = r; },\n  flow: { exit: (r) => { throw new __Exit(r || 'exit'); },\n    delay: () => { throw new Error('$.flow.delay: use a Wait node'); },\n    rerun: () => { throw new Error('$.flow.rerun has no n8n equivalent'); } },\n};\nconst __ctx = {};\n\n\nlet __ret;\ntry {\n  __ret = await __component.run.call(__ctx, { steps, $: __pd });\n} catch (e) {\n  // A step that answered the webhook and then exited still has to send that answer before the flow stops.\n  if (e instanceof __Exit) return __response ? [{ json: { __respond: __response, __exit: true } }] : [];\n  throw e;\n}\nconst { $summary, ...__exp } = __exports;\nreturn [{ json: { $return_value: __ret === undefined ? null : __ret, ...__exp, ...(__response ? { __respond: __response } : {}) } }];\n"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "name": "score",
+   "id": "6a3957cc-8e78-4d57-81de-a89728107db5",
+   "position": [
+    1920,
+    300
+   ]
+  }
+ ],
+ "connections": {
+  "start": {
+   "main": [
+    [
+     {
+      "node": "trigger",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "trigger": {
+   "main": [
+    [
+     {
+      "node": "normalize",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "normalize": {
+   "main": [
+    [
+     {
+      "node": "add_row",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "add_row": {
+   "main": [
+    [
+     {
+      "node": "notify_team",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "notify_team": {
+   "main": [
+    [
+     {
+      "node": "thank_you__mime",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "thank_you__mime": {
+   "main": [
+    [
+     {
+      "node": "thank_you",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "thank_you": {
+   "main": [
+    [
+     {
+      "node": "remember",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "remember": {
+   "main": [
+    [
+     {
+      "node": "score",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "active": false,
+ "settings": {
+  "executionOrder": "v1"
+ },
+ "pinData": {},
+ "meta": {
+  "pdmigra": {
+   "source": "acme-automations/new-order-p_demo01",
+   "converted": "2026-10-13T16:11:32.514Z"
+  }
+ }
+}

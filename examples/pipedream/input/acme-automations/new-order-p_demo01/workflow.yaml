@@ -1,0 +1,33 @@
+schema: workflow/2022.04
+name: New order follow-up
+triggers:
+- id: ti_demo01
+steps:
+- {namespace: normalize, runtime: nodejs20.x, uses: "./normalize/entry.js"}
+- namespace: add_row
+  uses: google_sheets-add-single-row@3.0.1
+  props:
+    googleSheets: {authProvisionId: apn_1}
+    sheetId: {__lv: {label: "Orders 2026", value: "1sAmPlE"}}
+    worksheetId: {__lv: {label: "Orders", value: 0}}
+    myColumnData: "{{steps.normalize.$return_value.row}}"
+- namespace: notify_team
+  uses: slack_v2-send-message@1.0.2
+  props:
+    slack: {authProvisionId: apn_2}
+    conversation: {__lv: {label: "#sales", value: "C0SAMPLE"}}
+    text: "New order from {{steps.normalize.$return_value.name}}: {{steps.normalize.$return_value.total}} USD"
+- namespace: thank_you
+  uses: gmail-send-email@0.3.3
+  props:
+    gmail: {authProvisionId: apn_3}
+    to: ["{{steps.normalize.$return_value.email}}"]
+    subject: "Thanks for your order, {{steps.normalize.$return_value.name}}"
+    body: "We received your order and will ship it soon."
+- namespace: remember
+  uses: data_stores-add-update-record@0.0.12
+  props:
+    dataStore: {__lv: {label: customers, value: ds_demo}}
+    key: "{{steps.normalize.$return_value.email}}"
+    value: "{{steps.normalize.$return_value.total}}"
+- {namespace: score, runtime: nodejs20.x, uses: "./score/entry.js"}

@@ -1,0 +1,163 @@
+{
+ "name": "Travel agent",
+ "nodes": [
+  {
+   "parameters": {
+    "options": {}
+   },
+   "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+   "typeVersion": 1.1,
+   "position": [
+    0,
+    0
+   ],
+   "id": "75c4295c-23dc-4afd-a878-981178d3b1c3",
+   "name": "When chat message received",
+   "webhookId": "bc025058-9a32-4d23-a05f-880274d0c59a"
+  },
+  {
+   "parameters": {
+    "promptType": "auto",
+    "options": {
+     "systemMessage": "You help travellers plan trips. Use the weather tool for forecasts."
+    }
+   },
+   "type": "@n8n/n8n-nodes-langchain.agent",
+   "typeVersion": 2.2,
+   "position": [
+    260,
+    0
+   ],
+   "id": "23620101-1dee-41cc-99b0-f5bdda5eae8f",
+   "name": "Travel agent"
+  },
+  {
+   "parameters": {
+    "model": {
+     "__rl": true,
+     "mode": "list",
+     "value": "gpt-4o"
+    },
+    "options": {}
+   },
+   "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+   "typeVersion": 1.2,
+   "position": [
+    30,
+    220
+   ],
+   "id": "c904121e-029f-4c26-a4be-72cb10c5abf2",
+   "name": "OpenAI Chat Model"
+  },
+  {
+   "parameters": {
+    "contextWindowLength": 6
+   },
+   "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+   "typeVersion": 1.3,
+   "position": [
+    210,
+    220
+   ],
+   "id": "161dae72-8b06-46b4-ae5c-ae8078e440e5",
+   "name": "Buffer Window Memory"
+  },
+  {
+   "parameters": {
+    "name": "get_weather",
+    "description": "Current weather for a city given its latitude and longitude",
+    "language": "javaScript",
+    "jsCode": "const __in = typeof query === \"string\" ? (() => { try { return JSON.parse(query); } catch (e) { return { input: query }; } })() : (query || {});\nconst $latitude = __in[\"latitude\"];\nconst $longitude = __in[\"longitude\"];\nconst fetch = async (url, opts = {}) => {\n  const res = await this.helpers.httpRequest({ url: String(url), method: opts.method || 'GET', headers: opts.headers, body: opts.body, returnFullResponse: true, ignoreHttpStatusErrors: true, encoding: 'text', json: false });\n  const text = typeof res.body === 'string' ? res.body : JSON.stringify(res.body);\n  return { ok: res.statusCode < 400, status: res.statusCode, headers: res.headers, text: async () => text, json: async () => JSON.parse(text) };\n};\n// ---- código original de Flowise ----\nreturn await (async () => {\n// (fetch: n8n ya lo trae)\nconst url = `https://api.open-meteo.com/v1/forecast?latitude=${$latitude}&longitude=${$longitude}&current_weather=true`;\ntry {\n  const response = await fetch(url);\n  const data = await response.json();\n  return JSON.stringify(data.current_weather);\n} catch (error) {\n  return 'Weather service unavailable';\n}\n})();",
+    "specifyInputSchema": true,
+    "schemaType": "manual",
+    "inputSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"latitude\": {\n      \"type\": \"number\",\n      \"description\": \"Latitude\"\n    },\n    \"longitude\": {\n      \"type\": \"number\",\n      \"description\": \"Longitude\"\n    }\n  },\n  \"required\": [\n    \"latitude\",\n    \"longitude\"\n  ]\n}"
+   },
+   "type": "@n8n/n8n-nodes-langchain.toolCode",
+   "typeVersion": 1.1,
+   "position": [
+    390,
+    220
+   ],
+   "id": "76a8964a-c0da-4e23-bf70-6e99c7407ac3",
+   "name": "get_weather"
+  },
+  {
+   "parameters": {},
+   "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+   "typeVersion": 1,
+   "position": [
+    570,
+    220
+   ],
+   "id": "77e5a149-79e1-4c86-82bb-dcbe63029317",
+   "name": "Calculator"
+  }
+ ],
+ "connections": {
+  "OpenAI Chat Model": {
+   "ai_languageModel": [
+    [
+     {
+      "node": "Travel agent",
+      "type": "ai_languageModel",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Buffer Window Memory": {
+   "ai_memory": [
+    [
+     {
+      "node": "Travel agent",
+      "type": "ai_memory",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "get_weather": {
+   "ai_tool": [
+    [
+     {
+      "node": "Travel agent",
+      "type": "ai_tool",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Calculator": {
+   "ai_tool": [
+    [
+     {
+      "node": "Travel agent",
+      "type": "ai_tool",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "When chat message received": {
+   "main": [
+    [
+     {
+      "node": "Travel agent",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "pinData": {},
+ "settings": {
+  "executionOrder": "v1"
+ },
+ "active": false,
+ "meta": {
+  "templateCredsSetupCompleted": false,
+  "convertedFrom": "flowise",
+  "converter": "MigrateFlows"
+ }
+}

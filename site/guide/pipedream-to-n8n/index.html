@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>How to migrate Pipedream workflows to n8n before March 31, 2027</title>
+<meta name="description" content="Pipedream Workflows shuts down on March 31, 2027. Dates, what the export contains, how each concept maps to n8n, and a step-by-step migration plan.">
+<link rel="canonical" href="https://migrateflows.com/guide/pipedream-to-n8n/"><link rel="alternate" hreflang="en" href="https://migrateflows.com/guide/pipedream-to-n8n/"><link rel="alternate" hreflang="es" href="https://migrateflows.com/es/guia/pipedream-a-n8n/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="How to migrate Pipedream workflows to n8n before March 31, 2027">
+<meta property="og:description" content="Pipedream Workflows shuts down on March 31, 2027. Dates, what the export contains, how each concept maps to n8n, and a step-by-step migration plan.">
+<meta property="og:url" content="https://migrateflows.com/guide/pipedream-to-n8n/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@700;800&family=Public+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+:root{--bg:#f3f4ef;--surface:#fff;--sunk:#e9ebe3;--ink:#15181d;--muted:#5b616b;--line:#d6d9cf;--accent:#0d6b62;--accent-soft:#dcefeb;
+--f-display:"Schibsted Grotesk","Segoe UI",system-ui,sans-serif;--f-body:"Public Sans","Segoe UI",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme: dark){:root{--bg:#101316;--surface:#171b1f;--sunk:#1e2328;--ink:#e7e9e3;--muted:#9aa1aa;--line:#2a3036;--accent:#45b5a6;--accent-soft:#16302c;color-scheme:dark}}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65}
+.wrap{max-width:760px;margin:0 auto;padding-inline:20px;padding-block:24px 72px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:36px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.1rem;display:flex;gap:10px;align-items:center;color:var(--ink);text-decoration:none}
+.brand svg{width:24px;height:24px}
+.top nav{display:flex;gap:16px;font-size:14px}
+a{color:var(--accent)}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;letter-spacing:-0.01em}
+h1{font-size:clamp(1.9rem,5vw,2.6rem);margin:6px 0 20px}
+h2{font-size:1.4rem;margin:40px 0 12px}
+h3{font-size:1.05rem;margin:22px 0 6px}
+p{margin:0 0 12px} ul,ol{padding-left:22px;margin:0 0 12px} li{margin-bottom:6px}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+code{background:var(--sunk);padding:1px 5px;border-radius:4px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.answer{background:var(--accent-soft);border-left:3px solid var(--accent);padding:14px 18px;border-radius:0 8px 8px 0;margin:0 0 8px}
+.answer p{margin:0}
+.table{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:0 0 12px}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+thead th{border-top:0;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cta{margin:36px 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.cta a.btn{background:var(--accent);color:var(--bg);text-decoration:none;font-weight:600;padding:10px 16px;border-radius:8px}
+.small{font-size:13.5px} .muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><a class="brand" href="/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><rect x="1" y="5" width="10" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="15" y="5" width="10" height="16" rx="2.5" fill="#0d6b62"/><path d="M8 13h10m-3-3 3 3-3 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>MigrateFlows</a><nav><a href="/">Converter</a><a href="/es/guia/pipedream-a-n8n/" hreflang="es">Español</a></nav></div>
+<article>
+<p class="eyebrow">Migration guide · updated October 2026</p>
+<h1>Pipedream Workflows shuts down on March 31, 2027. Here is how to move your workflows to n8n.</h1>
+
+<div class="answer">
+  <p><strong>Short answer.</strong> Pipedream stopped accepting new Workflows signups on September 30, 2026. Existing workflows keep running until <strong>March 31, 2027</strong>, and all Workflows data, including credentials and OAuth tokens, is deleted by <strong>April 30, 2027</strong>. Pipedream's export gives you one JSON file per workflow, but n8n can't import it directly: each workflow has to be rebuilt or converted.</p>
+</div>
+
+<h2>The dates that matter</h2>
+<div class="table"><table>
+  <thead><tr><th>Date</th><th>What happens</th></tr></thead>
+  <tbody>
+    <tr><td class="mono">Sep 30, 2026</td><td>No new Workflows signups or subscriptions. Workflows is in maintenance mode.</td></tr>
+    <tr><td class="mono">Mar 31, 2027</td><td>Workflows and String shut down. Subscriptions end with a prorated refund.</td></tr>
+    <tr><td class="mono">Apr 30, 2027</td><td>All Workflows data is permanently deleted, including credentials and OAuth tokens.</td></tr>
+  </tbody>
+</table></div>
+<p>Pipedream Connect (the Connect API, MCP servers and API proxy) is not affected. Only Workflows and String are shutting down.</p>
+
+<h2>What the export contains, and what it leaves out</h2>
+<p>Export works one project at a time and produces a ZIP with a <code>manifest.json</code> and one JSON file per workflow. Each workflow file holds its triggers, its steps (code for code steps, the component key and version for pre-built actions) and the props you configured.</p>
+<ul>
+  <li><strong>Removed for security:</strong> secret prop values, connected-account credentials and OAuth tokens (only an <code>authProvisionId</code> remains, which works only inside Pipedream).</li>
+  <li><strong>Not included at all:</strong> environment variables, event history, data stores, File Store files and the code of private multi-file components.</li>
+  <li><strong>Skipped:</strong> workflows that were never deployed, and anything past the limit of 500 workflows or 256 MB per export.</li>
+</ul>
+<p>So before the deadline, download your data stores and copy your environment variables separately. The export won't save them.</p>
+
+<h2>How Pipedream concepts map to n8n</h2>
+<div class="table"><table>
+  <thead><tr><th>Pipedream</th><th>n8n</th></tr></thead>
+  <tbody>
+    <tr><td>HTTP / webhook trigger</td><td>Webhook node (new URL: update it wherever events come from)</td></tr>
+    <tr><td>Schedule trigger</td><td>Schedule Trigger node</td></tr>
+    <tr><td>Email trigger</td><td>Email Trigger (IMAP) with your own mailbox</td></tr>
+    <tr><td>App event source</td><td>The app's trigger node, or a scheduled poll</td></tr>
+    <tr><td>Node.js code step</td><td>Code node (JavaScript)</td></tr>
+    <tr><td>Python code step</td><td>Code node (Python)</td></tr>
+    <tr><td><code>steps.name.$return_value</code></td><td><code>$('name').first().json</code></td></tr>
+    <tr><td><code>$.export('key', value)</code></td><td>A field in the node's output</td></tr>
+    <tr><td><code>$.flow.exit()</code></td><td>Return no items, so later nodes don't run</td></tr>
+    <tr><td><code>$.respond()</code></td><td>Respond to Webhook node</td></tr>
+    <tr><td>Connected accounts</td><td>n8n credentials</td></tr>
+    <tr><td>Environment variables</td><td>n8n Variables or environment variables</td></tr>
+    <tr><td>Data stores</td><td>n8n Data tables, workflow static data, or an external database</td></tr>
+    <tr><td>Pre-built actions</td><td>The app's n8n node, or an HTTP Request node using that app's n8n credential</td></tr>
+  </tbody>
+</table></div>
+
+<h2>Step by step</h2>
+<ol class="steps">
+  <li><strong>Make an inventory.</strong> List every workflow, mark the ones that matter, and note what triggers each one.</li>
+  <li><strong>Export each project.</strong> The ZIP is saved to the project's File Store; download it from there.</li>
+  <li><strong>Save what the export skips.</strong> Download data store contents and copy environment variables.</li>
+  <li><strong>Convert.</strong> Rebuild each workflow in n8n by hand, or drop the ZIP into <a href="/">MigrateFlows</a> to get n8n workflows plus a checklist.</li>
+  <li><strong>Import into n8n.</strong> Use Import from file, or paste the workflow JSON onto an empty canvas.</li>
+  <li><strong>Reconnect.</strong> Create the credentials and variables each workflow needs.</li>
+  <li><strong>Test with real events.</strong> Run each workflow with a sample event and compare the result with Pipedream's.</li>
+  <li><strong>Switch over.</strong> Point webhooks and senders to the new n8n URLs. If you run both platforms in parallel for a day, make sure the same event isn't processed twice.</li>
+  <li><strong>Turn off the Pipedream workflow</strong> once n8n has handled real traffic correctly.</li>
+</ol>
+
+<h2>Things that commonly break</h2>
+<ul>
+  <li><strong>npm packages.</strong> n8n Cloud doesn't allow external npm modules in Code nodes. Self-hosted n8n allows them with <code>NODE_FUNCTION_ALLOW_EXTERNAL</code>.</li>
+  <li><strong>Credentials used in code.</strong> Code that reads <code>this.app.$auth</code> needs those values as n8n variables, or the call moved to an HTTP Request node with a credential.</li>
+  <li><strong>Output shapes.</strong> n8n's built-in app nodes don't always return the same fields as Pipedream's actions. Later steps that read specific fields need a check.</li>
+  <li><strong>Deduplication and polling state.</strong> Polling sources remember what they already saw. Rebuild that state, or the first n8n run may reprocess old items.</li>
+  <li><strong>Webhook URLs.</strong> Every webhook gets a new address. Update each service that sends events.</li>
+  <li><strong>Timezones.</strong> Check the timezone of every schedule after moving it.</li>
+</ul>
+
+<div class="cta"><span>Have the export ZIP? Convert it in your browser.</span><a class="btn" href="/">Convert my workflows</a></div>
+<h2>Converting automatically</h2>
+<p><a href="/">MigrateFlows</a> reads Pipedream's export ZIP or a GitHub Sync folder and returns n8n workflows ready to import. Node.js code steps keep working through a small compatibility layer for <code>steps</code>, <code>$.export</code>, <code>$.flow.exit</code>, <code>$.respond</code> and <code>axios</code>. Pre-built actions for common services become HTTP Request nodes that use your own n8n credentials, so they return the same data as before. Each workflow comes with a list of what's left to do by hand. Everything runs in your browser; your files are not uploaded.</p>
+
+<h2>Questions</h2>
+<h3>Can I import Pipedream's export into n8n directly?</h3>
+<p>No. The formats are different. Each workflow has to be rebuilt or converted first.</p>
+<h3>Will my connected accounts come along?</h3>
+<p>No. The export removes tokens and credentials, so you connect each account again in n8n.</p>
+<h3>Is Pipedream Connect shutting down too?</h3>
+<p>No. Connect, its MCP servers and the API proxy remain supported.</p>
+<h3>Do I have to use n8n?</h3>
+<p>No. Windmill, Trigger.dev, Make, or plain code on a serverless platform are also options. n8n is a common choice because it has code nodes, webhooks, schedules and credentials for hundreds of services, and it can be self-hosted.</p>
+
+<p class="small muted">Sources: Pipedream documentation on the Workflows shutdown and on exporting workflows (pipedream.com/docs/workflows). MigrateFlows is independent and not affiliated with Pipedream, Workday or n8n.</p>
+</article>
+
+</div>
+</body>
+</html>

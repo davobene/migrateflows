@@ -1,0 +1,26 @@
+{
+ "name": "Lead capture webhook",
+ "triggers": [
+  {
+   "type": "http"
+  }
+ ],
+ "steps": [
+  {
+   "namespace": "validate",
+   "runtime": "nodejs20.x",
+   "code": "export default defineComponent({\n  async run({ steps, $ }) {\n    const { email } = steps.trigger.event.body || {};\n    if (!email) {\n      await $.respond({ status: 400, body: { error: 'email is required' } });\n      return $.flow.exit('missing email');\n    }\n    await $.respond({ status: 200, body: { ok: true } });\n    return { email };\n  },\n});"
+  },
+  {
+   "namespace": "save_lead",
+   "component": "airtable_oauth-create-single-record@1.0.0",
+   "props": {
+    "baseId": "appSample",
+    "tableId": "tblLeads",
+    "record": {
+     "Email": "{{steps.validate.$return_value.email}}"
+    }
+   }
+  }
+ ]
+}

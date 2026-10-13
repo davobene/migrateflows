@@ -1,0 +1,174 @@
+{
+ "name": "Support bot – document loading",
+ "nodes": [
+  {
+   "parameters": {
+    "mode": "insert",
+    "memoryKey": {
+     "__rl": true,
+     "mode": "list",
+     "value": "flowise_support_bot"
+    }
+   },
+   "type": "@n8n/n8n-nodes-langchain.vectorStoreInMemory",
+   "typeVersion": 1.3,
+   "position": [
+    520,
+    0
+   ],
+   "id": "b713cd3a-d069-42af-a9c5-1efae2650d77",
+   "name": "In-Memory Vector Store"
+  },
+  {
+   "parameters": {
+    "model": "text-embedding-3-small",
+    "options": {
+     "stripNewLines": false
+    }
+   },
+   "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+   "typeVersion": 1.2,
+   "position": [
+    470,
+    220
+   ],
+   "id": "04d97fd9-3560-44d8-961f-4e223ce0dc0e",
+   "name": "Embeddings OpenAI"
+  },
+  {
+   "parameters": {
+    "formTitle": "Cargar documentos – Support bot",
+    "formFields": {
+     "values": [
+      {
+       "fieldLabel": "Archivos",
+       "fieldType": "file",
+       "multipleFiles": true,
+       "requiredField": false
+      }
+     ]
+    },
+    "options": {}
+   },
+   "type": "n8n-nodes-base.formTrigger",
+   "typeVersion": 2.2,
+   "position": [
+    0,
+    0
+   ],
+   "id": "69cff478-8648-446e-b214-be7dbc6ba16b",
+   "name": "Subir documentos",
+   "webhookId": "29a6f24f-23fa-4f8d-99fa-9d37ed001311"
+  },
+  {
+   "parameters": {
+    "jsCode": "return [\n {\n  \"json\": {\n   \"text\": \"Horario de atención: lunes a viernes de 9 a 18 (hora de Buenos Aires).\\nEnvíos: despachamos en 24 horas hábiles; el seguimiento llega por email.\\nDevoluciones: hasta 30 días desde la entrega, con el producto sin uso.\\nMedios de pago: tarjeta, transferencia y Mercado Pago.\",\n   \"file\": \"faq.txt\"\n  }\n }\n];"
+   },
+   "type": "n8n-nodes-base.code",
+   "typeVersion": 2,
+   "position": [
+    260,
+    0
+   ],
+   "id": "7a873cd7-ce58-41f0-b5a6-4286189bcf7b",
+   "name": "Text File"
+  },
+  {
+   "parameters": {
+    "dataType": "json",
+    "textSplittingMode": "custom",
+    "jsonMode": "expressionData",
+    "jsonData": "={{ $json.text }}"
+   },
+   "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+   "typeVersion": 1.1,
+   "position": [
+    650,
+    220
+   ],
+   "id": "dbad27ac-b1da-4157-8431-9750a3ff661a",
+   "name": "Default Data Loader"
+  },
+  {
+   "parameters": {
+    "chunkSize": 500,
+    "chunkOverlap": 50
+   },
+   "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+   "typeVersion": 1,
+   "position": [
+    650,
+    420
+   ],
+   "id": "ef1e3191-5b12-4de9-a686-c6d66dababee",
+   "name": "Recursive Character Text Splitter"
+  }
+ ],
+ "connections": {
+  "Embeddings OpenAI": {
+   "ai_embedding": [
+    [
+     {
+      "node": "In-Memory Vector Store",
+      "type": "ai_embedding",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Subir documentos": {
+   "main": [
+    [
+     {
+      "node": "Text File",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Default Data Loader": {
+   "ai_document": [
+    [
+     {
+      "node": "In-Memory Vector Store",
+      "type": "ai_document",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Recursive Character Text Splitter": {
+   "ai_textSplitter": [
+    [
+     {
+      "node": "Default Data Loader",
+      "type": "ai_textSplitter",
+      "index": 0
+     }
+    ]
+   ]
+  },
+  "Text File": {
+   "main": [
+    [
+     {
+      "node": "In-Memory Vector Store",
+      "type": "main",
+      "index": 0
+     }
+    ]
+   ]
+  }
+ },
+ "pinData": {},
+ "settings": {
+  "executionOrder": "v1"
+ },
+ "active": false,
+ "meta": {
+  "templateCredsSetupCompleted": false,
+  "convertedFrom": "flowise",
+  "converter": "MigrateFlows"
+ }
+}
