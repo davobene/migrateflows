@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Cómo exportar tus flujos de Pipedream (y resolver errores del export)</title>
+<meta name="description" content="Export de Pipedream Workflows paso a paso, qué trae el ZIP y cómo resolver los problemas comunes: errores del almacenamiento de archivos, props vacíos y flujos salteados.">
+<link rel="canonical" href="https://migrateflows.com/es/guia/exportar-flujos-de-pipedream/"><link rel="alternate" hreflang="es" href="https://migrateflows.com/es/guia/exportar-flujos-de-pipedream/"><link rel="alternate" hreflang="en" href="https://migrateflows.com/guide/export-pipedream-workflows/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Cómo exportar tus flujos de Pipedream (y resolver errores del export)">
+<meta property="og:description" content="Export de Pipedream Workflows paso a paso, qué trae el ZIP y cómo resolver los problemas comunes: errores del almacenamiento de archivos, props vacíos y flujos salteados.">
+<meta property="og:url" content="https://migrateflows.com/es/guia/exportar-flujos-de-pipedream/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@700;800&family=Public+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+:root{--bg:#f3f4ef;--surface:#fff;--sunk:#e9ebe3;--ink:#15181d;--muted:#5b616b;--line:#d6d9cf;--accent:#0d6b62;--accent-soft:#dcefeb;
+--f-display:"Schibsted Grotesk","Segoe UI",system-ui,sans-serif;--f-body:"Public Sans","Segoe UI",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme: dark){:root{--bg:#101316;--surface:#171b1f;--sunk:#1e2328;--ink:#e7e9e3;--muted:#9aa1aa;--line:#2a3036;--accent:#45b5a6;--accent-soft:#16302c;color-scheme:dark}}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65}
+.wrap{max-width:760px;margin:0 auto;padding-inline:20px;padding-block:24px 72px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:36px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.1rem;display:flex;gap:10px;align-items:center;color:var(--ink);text-decoration:none}
+.brand svg{width:24px;height:24px}
+.top nav{display:flex;gap:16px;font-size:14px}
+a{color:var(--accent)}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;letter-spacing:-0.01em}
+h1{font-size:clamp(1.9rem,5vw,2.6rem);margin:6px 0 20px}
+h2{font-size:1.4rem;margin:40px 0 12px}
+h3{font-size:1.05rem;margin:22px 0 6px}
+p{margin:0 0 12px} ul,ol{padding-left:22px;margin:0 0 12px} li{margin-bottom:6px}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+code{background:var(--sunk);padding:1px 5px;border-radius:4px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.answer{background:var(--accent-soft);border-left:3px solid var(--accent);padding:14px 18px;border-radius:0 8px 8px 0;margin:0 0 8px}
+.answer p{margin:0}
+.table{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:0 0 12px}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+thead th{border-top:0;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cta{margin:36px 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.cta a.btn{background:var(--accent);color:var(--bg);text-decoration:none;font-weight:600;padding:10px 16px;border-radius:8px}
+.small{font-size:13.5px} .muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><a class="brand" href="/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><rect x="1" y="5" width="10" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="15" y="5" width="10" height="16" rx="2.5" fill="#0d6b62"/><path d="M8 13h10m-3-3 3 3-3 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>MigrateFlows</a><nav><a href="/">Convertidor</a><a href="/guide/export-pipedream-workflows/" hreflang="en">English</a></nav></div>
+<article>
+<p class="eyebrow">Guía · actualizada en octubre de 2026</p>
+<h1>Cómo exportar tus flujos de Pipedream (y qué hacer si el export falla)</h1>
+
+<div class="answer">
+  <p><strong>Respuesta corta.</strong> Abrí la <strong>configuración</strong> (<em>Settings</em>) de cada proyecto y usá <strong>Export workflows</strong>. Te baja un ZIP con un <code>manifest.json</code> y un archivo JSON por flujo. Funciona de a un proyecto, saltea los flujos que nunca se publicaron y no incluye data stores, archivos ni variables de entorno. Si el botón falla con un error del almacenamiento de archivos, pedile al soporte de Pipedream que lo habilite en tu cuenta.</p>
+</div>
+
+<h2>Paso a paso</h2>
+<ol>
+  <li>Abrí el proyecto en Pipedream y entrá a su <strong>Settings</strong>. El export está en la configuración del proyecto, no en la lista de flujos.</li>
+  <li>Hacé clic en <strong>Export workflows</strong> y esperá a que baje el ZIP.</li>
+  <li>Repetí con cada proyecto. No hay un export de toda la cuenta junta.</li>
+  <li>Abrí el <code>manifest.json</code> y fijate qué flujos quedaron afuera (los que nunca se publicaron aparecen en la lista pero sin archivo).</li>
+  <li>Guardá los ZIP en un lugar seguro. Todos los datos de Workflows se borran el <strong>30 de abril de 2027</strong>.</li>
+</ol>
+<p>Las instrucciones oficiales de Pipedream (en inglés): <a href="https://pipedream.com/docs/workflows/export-workflows" rel="nofollow">Export Workflows</a>.</p>
+
+<h2>Problemas comunes</h2>
+<div class="table"><table>
+  <thead><tr><th>Problema</th><th>Qué hacer</th></tr></thead>
+  <tbody>
+    <tr><td>No veo la opción de exportar</td><td>Está dentro de la configuración del proyecto. Los flujos creados fuera de un proyecto (la vieja pestaña "workflows" de v1) no se pueden exportar así, porque el export usa el almacenamiento de archivos del proyecto.</td></tr>
+    <tr><td>El export falla con un error del almacenamiento de archivos</td><td>Les pasó a varios usuarios en octubre de 2026. El soporte de Pipedream lo resolvió habilitando la función en la cuenta: escribí a support@pipedream.com con el ID del proyecto y el error.</td></tr>
+    <tr><td>Mi export no trae los valores de los props</td><td>Los exports hechos antes de principios de octubre de 2026 no incluían los valores de los campos que no son secretos. Pipedream los agregó después, así que exportá de nuevo.</td></tr>
+    <tr><td>Faltan flujos</td><td>Se saltean los flujos que nunca se publicaron, y cada export tiene un límite de tamaño. Publicá los que necesites, o dividí los proyectos muy grandes.</td></tr>
+    <tr><td>La lista de <code>triggers</code> viene vacía</td><td>Pasa en algunos exports. Anotá cómo arrancaba cada flujo (webhook, horario o evento de una app) para volver a configurarlo.</td></tr>
+  </tbody>
+</table></div>
+
+<h2>Qué trae el export y qué no</h2>
+<ul>
+  <li><strong>Trae:</strong> los pasos de cada flujo (pasos de código y acciones prearmadas), los props que configuraste, los disparadores cuando vienen, y los IDs elegidos con su nombre (por ejemplo un sitio de SharePoint o el nombre de una planilla de Google).</li>
+  <li><strong>Borra:</strong> los valores secretos, las credenciales de las cuentas conectadas y los tokens de OAuth. Cada paso de app conserva un <code>authProvisionId</code>, que te dice qué cuenta usaba.</li>
+  <li><strong>No borra:</strong> los datos de prueba guardados en los pasos de código. Revisalos antes de compartir un ZIP con alguien.</li>
+  <li><strong>No trae:</strong> data stores, archivos del File Store, variables de entorno ni el historial de eventos. Bajalos o copialos aparte.</li>
+</ul>
+
+<div class="cta"><span>¿Ya exportaste? Convertilo a n8n en tu navegador, no se sube nada.</span><a class="btn" href="/">Convertir mis flujos</a></div>
+
+<p>Después: <a href="/es/guia/pipedream-a-n8n/">cómo migrar los flujos exportados a n8n</a>, o compará las <a href="/es/guia/alternativas-a-pipedream/">alternativas a Pipedream</a>.</p>
+</article>
+
+</div>
+</body>
+</html>

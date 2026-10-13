@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Pipedream alternatives after the Workflows shutdown (2027)</title>
+<meta name="description" content="Pipedream Workflows shuts down on March 31, 2027. n8n, Windmill, Pipedream Connect, Make, Zapier and migration services compared, and how to choose.">
+<link rel="canonical" href="https://migrateflows.com/guide/pipedream-alternatives/"><link rel="alternate" hreflang="en" href="https://migrateflows.com/guide/pipedream-alternatives/"><link rel="alternate" hreflang="es" href="https://migrateflows.com/es/guia/alternativas-a-pipedream/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Pipedream alternatives after the Workflows shutdown (2027)">
+<meta property="og:description" content="Pipedream Workflows shuts down on March 31, 2027. n8n, Windmill, Pipedream Connect, Make, Zapier and migration services compared, and how to choose.">
+<meta property="og:url" content="https://migrateflows.com/guide/pipedream-alternatives/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@700;800&family=Public+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+:root{--bg:#f3f4ef;--surface:#fff;--sunk:#e9ebe3;--ink:#15181d;--muted:#5b616b;--line:#d6d9cf;--accent:#0d6b62;--accent-soft:#dcefeb;
+--f-display:"Schibsted Grotesk","Segoe UI",system-ui,sans-serif;--f-body:"Public Sans","Segoe UI",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme: dark){:root{--bg:#101316;--surface:#171b1f;--sunk:#1e2328;--ink:#e7e9e3;--muted:#9aa1aa;--line:#2a3036;--accent:#45b5a6;--accent-soft:#16302c;color-scheme:dark}}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65}
+.wrap{max-width:760px;margin:0 auto;padding-inline:20px;padding-block:24px 72px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:36px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.1rem;display:flex;gap:10px;align-items:center;color:var(--ink);text-decoration:none}
+.brand svg{width:24px;height:24px}
+.top nav{display:flex;gap:16px;font-size:14px}
+a{color:var(--accent)}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;letter-spacing:-0.01em}
+h1{font-size:clamp(1.9rem,5vw,2.6rem);margin:6px 0 20px}
+h2{font-size:1.4rem;margin:40px 0 12px}
+h3{font-size:1.05rem;margin:22px 0 6px}
+p{margin:0 0 12px} ul,ol{padding-left:22px;margin:0 0 12px} li{margin-bottom:6px}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+code{background:var(--sunk);padding:1px 5px;border-radius:4px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.answer{background:var(--accent-soft);border-left:3px solid var(--accent);padding:14px 18px;border-radius:0 8px 8px 0;margin:0 0 8px}
+.answer p{margin:0}
+.table{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:0 0 12px}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+thead th{border-top:0;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cta{margin:36px 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.cta a.btn{background:var(--accent);color:var(--bg);text-decoration:none;font-weight:600;padding:10px 16px;border-radius:8px}
+.small{font-size:13.5px} .muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><a class="brand" href="/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><rect x="1" y="5" width="10" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="15" y="5" width="10" height="16" rx="2.5" fill="#0d6b62"/><path d="M8 13h10m-3-3 3 3-3 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>MigrateFlows</a><nav><a href="/">Converter</a><a href="/es/guia/alternativas-a-pipedream/" hreflang="es">Español</a></nav></div>
+<article>
+<p class="eyebrow">Comparison · updated October 2026</p>
+<h1>Pipedream alternatives after the Workflows shutdown</h1>
+
+<div class="answer">
+  <p><strong>Short answer.</strong> Pipedream Workflows shuts down on <strong>March 31, 2027</strong>. If most of your workflows are Node.js or Python code steps, <strong>n8n</strong> or <strong>Windmill</strong> are the closest fit, and both can run on your own server. If you'd rather keep calling the same Pipedream components, build on <strong>Pipedream Connect</strong>, which is not shutting down. No-code tools like Make or Zapier work best for simple, action-only workflows.</p>
+</div>
+
+<h2>The options at a glance</h2>
+<div class="table"><table>
+  <thead><tr><th>Option</th><th>Good for</th><th>Watch out for</th></tr></thead>
+  <tbody>
+    <tr><td><strong>n8n</strong></td><td>Visual workflows with JavaScript and Python Code nodes, 400+ app nodes, AI agents. Self-host for free or use n8n Cloud.</td><td>Credentials have to be reconnected; npm modules only on self-hosted n8n.</td></tr>
+    <tr><td><strong>Windmill</strong></td><td>Code-first teams: scripts and flows in TypeScript, Python, Go, Bash and more. Open source, self-hostable.</td><td>Users moving from Pipedream mention no built-in equivalent of data stores and more manual OAuth setup.</td></tr>
+    <tr><td><strong>Pipedream Connect</strong></td><td>Keeping the same Pipedream components and managed auth, called from your own code or backend.</td><td>You write and host the orchestration yourself; it is an API, not a workflow builder.</td></tr>
+    <tr><td><strong>Make / Zapier</strong></td><td>Simple workflows built from pre-built actions, for non-developers.</td><td>Code steps are limited and pricing is per operation or task, which adds up at volume.</td></tr>
+    <tr><td><strong>Plain code</strong> (Cloudflare Workers, Lambda, a small server)</td><td>A handful of workflows that are mostly code anyway.</td><td>You own retries, logs, schedules and secrets.</td></tr>
+  </tbody>
+</table></div>
+
+<h2>Migration services</h2>
+<p>Several companies offer to move your workflows for you, each to its own platform: Trelium (free migration to Trelium), Rivulo (runs your steps on Pipedream Connect) and Glow have posted offers in Pipedream's community Slack. That is a good option if you want a managed service and are fine with moving to that vendor.</p>
+<p>If you want to end up on an open tool you control, n8n is the destination with the most community, templates and hosting options. MigrateFlows is a free, open-source converter for exactly that path.</p>
+
+<div class="cta"><span>Have your Pipedream export? Convert it to n8n in your browser.</span><a class="btn" href="/">Convert my workflows</a></div>
+
+<h2>How to choose</h2>
+<ul>
+  <li><strong>Mostly code steps, want to keep a visual view:</strong> n8n.</li>
+  <li><strong>Mostly code steps, prefer code-first and Git:</strong> Windmill.</li>
+  <li><strong>Many pre-built Pipedream actions you don't want to rebuild:</strong> Pipedream Connect, or a service built on it.</li>
+  <li><strong>Few, simple workflows and no developers:</strong> Make or Zapier.</li>
+  <li><strong>Hundreds of workflows and a hard deadline:</strong> convert in bulk first, then review the checklist of what needs manual work.</li>
+</ul>
+
+<h2>Whatever you pick, before March 31</h2>
+<ul>
+  <li>Export every project now. The export works one project at a time and skips workflows that were never deployed. See <a href="/guide/export-pipedream-workflows/">how to export your Pipedream workflows</a>.</li>
+  <li>Download your data stores and File Store files and copy your environment variables: the export doesn't include them.</li>
+  <li>List which apps each workflow connects to, so you can reconnect those accounts in the new tool.</li>
+  <li>Plan the webhook switch: every service that calls a Pipedream URL needs the new one.</li>
+</ul>
+<p>Step-by-step plan for n8n: <a href="/guide/pipedream-to-n8n/">How to migrate Pipedream workflows to n8n</a>.</p>
+</article>
+
+</div>
+</body>
+</html>

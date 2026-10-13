@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Alternativas a Pipedream después del cierre de Workflows (2027)</title>
+<meta name="description" content="Pipedream Workflows cierra el 31 de marzo de 2027. Comparación de n8n, Windmill, Pipedream Connect, Make, Zapier y los servicios de migración, y cómo elegir.">
+<link rel="canonical" href="https://migrateflows.com/es/guia/alternativas-a-pipedream/"><link rel="alternate" hreflang="es" href="https://migrateflows.com/es/guia/alternativas-a-pipedream/"><link rel="alternate" hreflang="en" href="https://migrateflows.com/guide/pipedream-alternatives/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Alternativas a Pipedream después del cierre de Workflows (2027)">
+<meta property="og:description" content="Pipedream Workflows cierra el 31 de marzo de 2027. Comparación de n8n, Windmill, Pipedream Connect, Make, Zapier y los servicios de migración, y cómo elegir.">
+<meta property="og:url" content="https://migrateflows.com/es/guia/alternativas-a-pipedream/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@700;800&family=Public+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+:root{--bg:#f3f4ef;--surface:#fff;--sunk:#e9ebe3;--ink:#15181d;--muted:#5b616b;--line:#d6d9cf;--accent:#0d6b62;--accent-soft:#dcefeb;
+--f-display:"Schibsted Grotesk","Segoe UI",system-ui,sans-serif;--f-body:"Public Sans","Segoe UI",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme: dark){:root{--bg:#101316;--surface:#171b1f;--sunk:#1e2328;--ink:#e7e9e3;--muted:#9aa1aa;--line:#2a3036;--accent:#45b5a6;--accent-soft:#16302c;color-scheme:dark}}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65}
+.wrap{max-width:760px;margin:0 auto;padding-inline:20px;padding-block:24px 72px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:36px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.1rem;display:flex;gap:10px;align-items:center;color:var(--ink);text-decoration:none}
+.brand svg{width:24px;height:24px}
+.top nav{display:flex;gap:16px;font-size:14px}
+a{color:var(--accent)}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;letter-spacing:-0.01em}
+h1{font-size:clamp(1.9rem,5vw,2.6rem);margin:6px 0 20px}
+h2{font-size:1.4rem;margin:40px 0 12px}
+h3{font-size:1.05rem;margin:22px 0 6px}
+p{margin:0 0 12px} ul,ol{padding-left:22px;margin:0 0 12px} li{margin-bottom:6px}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+code{background:var(--sunk);padding:1px 5px;border-radius:4px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.answer{background:var(--accent-soft);border-left:3px solid var(--accent);padding:14px 18px;border-radius:0 8px 8px 0;margin:0 0 8px}
+.answer p{margin:0}
+.table{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:0 0 12px}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+thead th{border-top:0;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cta{margin:36px 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.cta a.btn{background:var(--accent);color:var(--bg);text-decoration:none;font-weight:600;padding:10px 16px;border-radius:8px}
+.small{font-size:13.5px} .muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><a class="brand" href="/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><rect x="1" y="5" width="10" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="15" y="5" width="10" height="16" rx="2.5" fill="#0d6b62"/><path d="M8 13h10m-3-3 3 3-3 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>MigrateFlows</a><nav><a href="/">Convertidor</a><a href="/guide/pipedream-alternatives/" hreflang="en">English</a></nav></div>
+<article>
+<p class="eyebrow">Comparación · actualizada en octubre de 2026</p>
+<h1>Alternativas a Pipedream después del cierre de Workflows</h1>
+
+<div class="answer">
+  <p><strong>Respuesta corta.</strong> Pipedream Workflows cierra el <strong>31 de marzo de 2027</strong>. Si la mayoría de tus flujos son pasos de código en Node.js o Python, lo más parecido es <strong>n8n</strong> o <strong>Windmill</strong>, y los dos se pueden instalar en un servidor propio. Si preferís seguir usando los mismos componentes de Pipedream, podés armar sobre <strong>Pipedream Connect</strong>, que no cierra. Las herramientas sin código como Make o Zapier funcionan mejor para flujos simples, hechos solo con acciones prearmadas.</p>
+</div>
+
+<h2>Las opciones de un vistazo</h2>
+<div class="table"><table>
+  <thead><tr><th>Opción</th><th>Sirve para</th><th>Ojo con</th></tr></thead>
+  <tbody>
+    <tr><td><strong>n8n</strong></td><td>Flujos visuales con nodos de código JavaScript y Python, más de 400 nodos de apps, agentes de IA. Gratis instalado por tu cuenta o pago en n8n Cloud.</td><td>Hay que reconectar las cuentas; los módulos npm solo funcionan en n8n propio.</td></tr>
+    <tr><td><strong>Windmill</strong></td><td>Equipos que trabajan con código: scripts y flujos en TypeScript, Python, Go, Bash y más. Código abierto, se puede instalar en un servidor propio.</td><td>Quienes vienen de Pipedream comentan que no tiene un equivalente directo a los data stores y que el OAuth se configura más a mano.</td></tr>
+    <tr><td><strong>Pipedream Connect</strong></td><td>Seguir usando los mismos componentes de Pipedream y su manejo de cuentas, desde tu propio código o backend.</td><td>La orquestación la escribís y alojás vos; es una API, no un editor de flujos.</td></tr>
+    <tr><td><strong>Make / Zapier</strong></td><td>Flujos simples hechos con acciones prearmadas, para gente que no programa.</td><td>Los pasos de código son limitados y se cobra por operación o tarea, lo que suma con mucho volumen.</td></tr>
+    <tr><td><strong>Código propio</strong> (Cloudflare Workers, Lambda, un servidor chico)</td><td>Pocos flujos que igual son casi todo código.</td><td>Los reintentos, registros, horarios y secretos quedan a tu cargo.</td></tr>
+  </tbody>
+</table></div>
+
+<h2>Servicios de migración</h2>
+<p>Varias empresas ofrecen mudarte los flujos, cada una a su propia plataforma: Trelium (migración gratis a Trelium), Rivulo (corre tus pasos sobre Pipedream Connect) y Glow publicaron ofertas en el Slack de la comunidad de Pipedream. Es una buena opción si querés un servicio administrado y no te molesta pasarte a ese proveedor.</p>
+<p>Si querés terminar en una herramienta abierta que controles vos, n8n es el destino con más comunidad, plantillas y opciones de alojamiento. MigrateFlows es un convertidor gratis y de código abierto justamente para ese camino.</p>
+
+<div class="cta"><span>¿Tenés el export de Pipedream? Convertilo a n8n en tu navegador.</span><a class="btn" href="/">Convertir mis flujos</a></div>
+
+<h2>Cómo elegir</h2>
+<ul>
+  <li><strong>Casi todo código y querés seguir viéndolo visual:</strong> n8n.</li>
+  <li><strong>Casi todo código y preferís trabajar con código y Git:</strong> Windmill.</li>
+  <li><strong>Muchas acciones prearmadas de Pipedream que no querés rehacer:</strong> Pipedream Connect, o un servicio armado sobre Connect.</li>
+  <li><strong>Pocos flujos simples y nadie que programe:</strong> Make o Zapier.</li>
+  <li><strong>Cientos de flujos y una fecha límite:</strong> primero convertir todo en lote y después revisar la lista de lo que queda a mano.</li>
+</ul>
+
+<h2>Elijas lo que elijas, antes del 31 de marzo</h2>
+<ul>
+  <li>Exportá ya todos los proyectos. El export va de a un proyecto y saltea los flujos que nunca se publicaron. Mirá <a href="/es/guia/exportar-flujos-de-pipedream/">cómo exportar tus flujos de Pipedream</a>.</li>
+  <li>Bajá tus data stores y los archivos del File Store, y copiá tus variables de entorno: el export no los incluye.</li>
+  <li>Anotá a qué apps se conecta cada flujo, para reconectar esas cuentas en la herramienta nueva.</li>
+  <li>Planificá el cambio de webhooks: cada servicio que llama a una URL de Pipedream necesita la nueva.</li>
+</ul>
+<p>Plan paso a paso para n8n: <a href="/es/guia/pipedream-a-n8n/">Cómo migrar tus flujos de Pipedream a n8n</a>.</p>
+</article>
+
+</div>
+</body>
+</html>

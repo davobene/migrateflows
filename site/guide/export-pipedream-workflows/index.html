@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>How to export your Pipedream workflows (and fix export errors)</title>
+<meta name="description" content="Step-by-step Pipedream Workflows export, what the ZIP contains, and fixes for common problems like file store errors, missing props and skipped workflows.">
+<link rel="canonical" href="https://migrateflows.com/guide/export-pipedream-workflows/"><link rel="alternate" hreflang="en" href="https://migrateflows.com/guide/export-pipedream-workflows/"><link rel="alternate" hreflang="es" href="https://migrateflows.com/es/guia/exportar-flujos-de-pipedream/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="How to export your Pipedream workflows (and fix export errors)">
+<meta property="og:description" content="Step-by-step Pipedream Workflows export, what the ZIP contains, and fixes for common problems like file store errors, missing props and skipped workflows.">
+<meta property="og:url" content="https://migrateflows.com/guide/export-pipedream-workflows/">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<style>:root{color-scheme:light}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@700;800&family=Public+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+:root{--bg:#f3f4ef;--surface:#fff;--sunk:#e9ebe3;--ink:#15181d;--muted:#5b616b;--line:#d6d9cf;--accent:#0d6b62;--accent-soft:#dcefeb;
+--f-display:"Schibsted Grotesk","Segoe UI",system-ui,sans-serif;--f-body:"Public Sans","Segoe UI",system-ui,sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace}
+@media (prefers-color-scheme: dark){:root{--bg:#101316;--surface:#171b1f;--sunk:#1e2328;--ink:#e7e9e3;--muted:#9aa1aa;--line:#2a3036;--accent:#45b5a6;--accent-soft:#16302c;color-scheme:dark}}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65}
+.wrap{max-width:760px;margin:0 auto;padding-inline:20px;padding-block:24px 72px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:36px}
+.brand{font-family:var(--f-display);font-weight:800;font-size:1.1rem;display:flex;gap:10px;align-items:center;color:var(--ink);text-decoration:none}
+.brand svg{width:24px;height:24px}
+.top nav{display:flex;gap:16px;font-size:14px}
+a{color:var(--accent)}
+h1,h2,h3{font-family:var(--f-display);line-height:1.15;text-wrap:balance;letter-spacing:-0.01em}
+h1{font-size:clamp(1.9rem,5vw,2.6rem);margin:6px 0 20px}
+h2{font-size:1.4rem;margin:40px 0 12px}
+h3{font-size:1.05rem;margin:22px 0 6px}
+p{margin:0 0 12px} ul,ol{padding-left:22px;margin:0 0 12px} li{margin-bottom:6px}
+code,.mono{font-family:var(--f-mono);font-size:.88em}
+code{background:var(--sunk);padding:1px 5px;border-radius:4px}
+.eyebrow{font-family:var(--f-mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0}
+.answer{background:var(--accent-soft);border-left:3px solid var(--accent);padding:14px 18px;border-radius:0 8px 8px 0;margin:0 0 8px}
+.answer p{margin:0}
+.table{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface);margin:0 0 12px}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+thead th{border-top:0;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.cta{margin:36px 0;display:flex;gap:14px;align-items:center;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.cta a.btn{background:var(--accent);color:var(--bg);text-decoration:none;font-weight:600;padding:10px 16px;border-radius:8px}
+.small{font-size:13.5px} .muted{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><a class="brand" href="/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><rect x="1" y="5" width="10" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><rect x="15" y="5" width="10" height="16" rx="2.5" fill="#0d6b62"/><path d="M8 13h10m-3-3 3 3-3 3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>MigrateFlows</a><nav><a href="/">Converter</a><a href="/es/guia/exportar-flujos-de-pipedream/" hreflang="es">Español</a></nav></div>
+<article>
+<p class="eyebrow">Guide · updated October 2026</p>
+<h1>How to export your Pipedream workflows (and what to do when the export fails)</h1>
+
+<div class="answer">
+  <p><strong>Short answer.</strong> Open each project's <strong>Settings</strong> and use <strong>Export workflows</strong>. You get a ZIP with a <code>manifest.json</code> and one JSON file per workflow. It works one project at a time, skips workflows that were never deployed, and leaves out data stores, files and environment variables. If the export button fails with a file store error, ask Pipedream support to enable it for your account.</p>
+</div>
+
+<h2>Step by step</h2>
+<ol>
+  <li>Open the project in Pipedream and go to its <strong>Settings</strong>. The export lives in the project settings, not in the workflow list.</li>
+  <li>Click <strong>Export workflows</strong> and wait for the ZIP to download.</li>
+  <li>Repeat for every project. There is no single export for the whole account.</li>
+  <li>Open <code>manifest.json</code> and check which workflows were skipped (never-deployed workflows are listed but have no file).</li>
+  <li>Store the ZIPs somewhere safe. All Workflows data is deleted on <strong>April 30, 2027</strong>.</li>
+</ol>
+<p>Pipedream's own instructions: <a href="https://pipedream.com/docs/workflows/export-workflows" rel="nofollow">Export Workflows</a>.</p>
+
+<h2>Common problems</h2>
+<div class="table"><table>
+  <thead><tr><th>Problem</th><th>What to do</th></tr></thead>
+  <tbody>
+    <tr><td>I don't see the export option</td><td>It is inside the project's Settings. Workflows created outside a project (the old v1 "workflows" tab) can't be exported this way, because the export relies on the project's file store.</td></tr>
+    <tr><td>The export fails with an error about the file store</td><td>Several users hit this in October 2026. Pipedream support fixed it by enabling the feature on the account: write to support@pipedream.com with your project ID and the error.</td></tr>
+    <tr><td>My export has no prop values</td><td>Exports made before early October 2026 left out the values of non-secret inputs. Pipedream added them later, so export again.</td></tr>
+    <tr><td>Some workflows are missing</td><td>Never-deployed workflows are skipped, and each export has a size limit. Deploy the ones you need, or split very large projects.</td></tr>
+    <tr><td>The <code>triggers</code> list is empty</td><td>It happens in some exports. Note how each workflow was started (webhook, schedule or app event) so you can set it up again.</td></tr>
+  </tbody>
+</table></div>
+
+<h2>What is in the export, and what isn't</h2>
+<ul>
+  <li><strong>Included:</strong> each workflow's steps (code steps and pre-built actions), the props you configured, triggers when present, and selected IDs with their labels (for example a SharePoint site or a Google Sheet name).</li>
+  <li><strong>Redacted:</strong> secret values, connected-account credentials and OAuth tokens. Each app step keeps an <code>authProvisionId</code>, which tells you which account it used.</li>
+  <li><strong>Not redacted:</strong> test data saved in code steps. Check it before sharing a ZIP with anyone.</li>
+  <li><strong>Not included:</strong> data stores, File Store files, environment variables and event history. Download or copy them separately.</li>
+</ul>
+
+<div class="cta"><span>Export done? Convert it to n8n in your browser, nothing is uploaded.</span><a class="btn" href="/">Convert my workflows</a></div>
+
+<p>Next: <a href="/guide/pipedream-to-n8n/">how to migrate the exported workflows to n8n</a>, or compare <a href="/guide/pipedream-alternatives/">Pipedream alternatives</a>.</p>
+</article>
+
+</div>
+</body>
+</html>
