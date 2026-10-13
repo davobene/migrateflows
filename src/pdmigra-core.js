@@ -70,11 +70,15 @@
       if (!d || !Array.isArray(d.steps)) continue;
       const steps = d.steps.map((s) => {
         const ns = s.namespace || s.name || s.key || s.id;
-        const code = typeof s.code === "string" ? s.code : (s.source && typeof s.source.code === "string" ? s.source.code : null);
+        // Real exports (workflow.json/2026.01): every step is a "CodeCell"; code lives in uses.code, actions in uses.key.
+        const code = typeof s.code === "string" ? s.code : (s.source && typeof s.source.code === "string" ? s.source.code
+          : (s.uses && typeof s.uses.code === "string" ? s.uses.code : null));
+        const runtime = String(s.runtime || s.lang || "");
         let comp = s.component_key || s.component || s.key_version || s.uses || "";
         if (comp && typeof comp === "object") comp = comp.key || "";
-        const step = { ns, runtime: s.runtime || "", props: s.props || s.configured_props || {} };
-        if (code) Object.assign(step, { kind: "code", code, file: path, lang: /python/.test(String(s.runtime || s.type)) ? "python" : "node" });
+        const step = { ns, runtime, props: s.props || s.configured_props || {} };
+        if (code && /^(go|bash)/.test(runtime)) Object.assign(step, { kind: "component", component: runtime.replace(/[\d.]+$/, "") + "-code-step", version: "" });
+        else if (code) Object.assign(step, { kind: "code", code, file: path, lang: /python/.test(runtime || String(s.type)) ? "python" : "node" });
         else {
           const at = String(comp).lastIndexOf("@");
           Object.assign(step, { kind: "component", component: at > 0 ? comp.slice(0, at) : comp, version: s.version || (at > 0 ? comp.slice(at + 1) : "") });
@@ -121,8 +125,8 @@
     flowRerun: (ns) => [`step ${ns}: uses $.flow.rerun, which has no direct n8n equivalent`, `paso ${ns}: usa $.flow.rerun, que no tiene equivalente directo en n8n`],
     send: (ns) => [`step ${ns}: uses $.send (email/http/s3); replace it with the matching n8n node`, `paso ${ns}: usa $.send (email/http/s3); reemplazarlo por el nodo de n8n que corresponda`],
     files: (ns) => [`step ${ns}: uses Pipedream file storage ($.files); review by hand`, `paso ${ns}: usa archivos de Pipedream ($.files); revisar a mano`],
-    unsupported: (ns, k, v) => [`step ${ns}: action ${k}@${v} is not converted automatically yet; the node stops with an error until you replace it`,
-      `paso ${ns}: la acción ${k}@${v} todavía no se convierte sola; el nodo frena con un error hasta que lo reemplaces`],
+    unsupported: (ns, k, v) => [`step ${ns}: action ${k}${v ? "@" + v : ""} is not converted automatically yet; the node stops with an error until you replace it`,
+      `paso ${ns}: la acción ${k}${v ? "@" + v : ""} todavía no se convierte sola; el nodo frena con un error hasta que lo reemplaces`],
     shape: (ns, uses) => [`step ${ns}: later steps read ${uses}; the n8n node returns the service's raw API response, check those fields`,
       `paso ${ns}: pasos siguientes leen ${uses}; el nodo de n8n devuelve la respuesta cruda de la API, revisar esos campos`],
     pagination: (ns) => [`step ${ns}: returns only the first page of results (Pipedream fetched every page); enable pagination in the HTTP node options if needed`,
@@ -133,8 +137,8 @@
       "disparador por email: Pipedream daba una casilla propia; en n8n usar Email Trigger (IMAP) con una casilla tuya"],
     trigSource: (k) => [`app trigger (${k}): pick the matching n8n trigger node or a scheduled poll`,
       `disparador de app (${k}): elegir el trigger equivalente de n8n o un sondeo programado`],
-    trigUnknown: () => ["trigger: this file does not include the trigger settings (GitHub Sync); it became a manual trigger. With the official export it converts automatically",
-      "disparador: el archivo no trae su configuración (GitHub Sync); quedó como disparador manual. Con el export oficial se convierte solo"],
+    trigUnknown: () => ["trigger: the file does not include the trigger settings (GitHub Sync never does, and some exports come with an empty trigger list); it became a manual trigger, set the real one (webhook, schedule or app) in n8n",
+      "disparador: el archivo no trae su configuración (GitHub Sync nunca la trae y algunos exports vienen con la lista vacía); quedó como disparador manual, configurá el real (webhook, programado o de app) en n8n"],
     trigSchedule: () => ["scheduled trigger: the schedule was not in the file; set the frequency", "disparador programado: la frecuencia no venía en el archivo; configurarla"],
     trigMany: (n) => [`the workflow had ${n} triggers; n8n uses one per workflow (the first one was converted)`,
       `el flujo tenía ${n} disparadores; n8n usa uno por flujo (se convirtió el primero)`],
