@@ -376,11 +376,13 @@ ${body.trim()}
 ${stepsObjectJs(prev)}
 const __exports = {};
 let __response = null;
+let __exited = false;
 class __Exit extends Error {}
 const __pd = {
   export: (k, v) => { __exports[k] = v; },
   respond: async (r) => { __response = r; },
-  flow: { exit: (r) => { throw new __Exit(r || 'exit'); },
+  // The flag keeps the exit even when the step's own try/catch swallows the throw.
+  flow: { exit: (r) => { __exited = true; throw new __Exit(r || 'exit'); },
     delay: () => { throw new Error('$.flow.delay: use a Wait node'); },
     rerun: () => { throw new Error('$.flow.rerun has no n8n equivalent'); } },
 };
@@ -392,9 +394,10 @@ try {
   __ret = await __component.run.call(__ctx, { steps, $: __pd });
 } catch (e) {
   // A step that answered the webhook and then exited still has to send that answer before the flow stops.
-  if (e instanceof __Exit) return __response ? [{ json: { __respond: __response, __exit: true } }] : [];
-  throw e;
+  if (!(e instanceof __Exit)) throw e;
+  __exited = true;
 }
+if (__exited) return __response ? [{ json: { __respond: __response, __exit: true } }] : [];
 const { $summary, ...__exp } = __exports;
 return [{ json: { $return_value: __ret === undefined ? null : __ret, ...__exp, ...(__response ? { __respond: __response } : {}) } }];
 `;
@@ -423,7 +426,9 @@ class _Exit(Exception):
     pass
 
 class _Flow:
+    exited = False
     def exit(self, reason=None):
+        self.exited = True
         raise _Exit(reason)
 
 class _PD:
@@ -443,6 +448,8 @@ _pd = _PD(_in.get("__steps", {}), _in.get("__props", {}))
 try:
     _ret = handler(_pd)
 except _Exit:
+    pass
+if _pd.flow.exited:
     return []
 _out = {"$return_value": _ret, **_pd.exports}
 _out.pop("$summary", None)
