@@ -918,6 +918,17 @@ return [{ json: { timestamp: Math.floor(now.getTime() / 1000), interval_seconds:
     const exported = wfs.length - (isSync ? readGithubSync(files, yamlLoad).length : 0);
     const seeds = readSeeds(files);
     const workflows = wfs.map((w) => convertWorkflow(w, files, seeds));
+    // Names like "Sales/EMEA" and "Sales:EMEA" sanitize to the same file; number the repeats (case-insensitive,
+    // skipping names another workflow already has) so no output overwrites another.
+    const taken = new Set(workflows.map((w) => w.fileName.toLowerCase())), used = new Set();
+    for (const w of workflows) {
+      const stem = w.fileName.slice(0, -".n8n.json".length);
+      for (let i = 2; used.has(w.fileName.toLowerCase()); i++) {
+        const name = stem.slice(0, 60 - String(i).length - 1) + "_" + i + ".n8n.json";
+        if (!taken.has(name.toLowerCase()) && !used.has(name.toLowerCase())) w.fileName = name;
+      }
+      used.add(w.fileName.toLowerCase());
+    }
     const cov = workflows.length ? workflows.reduce((a, w) => a + w.coverage, 0) / workflows.length : 0;
     const format = isSync && exported ? "mixed" : isSync ? "github-sync" : "export";
     return { workflows, summary: { format, count: workflows.length, coverage: cov,
