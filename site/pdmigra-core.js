@@ -764,6 +764,34 @@ return [{ json: { $return_value: out === undefined ? null : out } }];` }, type: 
     };
   }
 
+  // Pipedream's Filter actions stop the workflow when the condition fails (continue) or holds (end).
+  const filterAction = (endWhen) => (s, c) => ({ parameters: { jsCode: `// Pipedream "${s.component}" re-implemented: the workflow stops here when the condition is ${!endWhen}. pdmigra.
+${HELPERS}${stepsObjectJs(c.prev)}
+const P = ${propsToJs(s.props, new Set(), c)};
+const a = P.initialValue, b = P.secondValue, cs = P.caseSensitive === true || P.caseSensitive === 'true';
+const str = (x) => { x = x === undefined || x === null ? '' : typeof x === 'object' ? JSON.stringify(x) : String(x); return cs ? x : x.toLowerCase(); };
+const parse = (x, d) => { if (typeof x !== 'string') return x === undefined || x === null ? d : x; try { return JSON.parse(x); } catch (e) { return d; } };
+const isNull = (x) => x === null || x === undefined || x === 'null' || x === 'undefined';
+const arr = () => { const v = Array.isArray(b) ? b : parse(b, [b]); return (Array.isArray(v) ? v : [v]).map(str); };
+const obj = () => { const v = parse(b, {}); return v && typeof v === 'object' ? v : {}; };
+const checks = {
+  CONTAINS: () => str(a).includes(str(b)), TEXT_EQUALS: () => str(a) === str(b),
+  STARTS_WITH: () => str(a).startsWith(str(b)), ENDS_WITH: () => str(a).endsWith(str(b)),
+  GREATER_THAN: () => Number(a) > Number(b), GREATER_THAN_EQUALS: () => Number(a) >= Number(b),
+  LESS_THAN: () => Number(a) < Number(b), LESS_THAN_EQUALS: () => Number(a) <= Number(b), EQUALS: () => Number(a) === Number(b),
+  TRUE: () => !!a, IS_NULL: () => isNull(a), IN_ARRAY: () => arr().includes(str(a)),
+  KEY_EXISTS: () => { const o = obj(); return String(a) in o && !isNull(o[a]); },
+};
+const not = { NOT_CONTAINS: 'CONTAINS', TEXT_NOT_EQUALS: 'TEXT_EQUALS', NOT_STARTS_WITH: 'STARTS_WITH', NOT_ENDS_WITH: 'ENDS_WITH',
+  FALSE: 'TRUE', NOT_NULL: 'IS_NULL', NOT_IN_ARRAY: 'IN_ARRAY', KEY_NOT_EXISTS: 'KEY_EXISTS' };
+const cond = String(P.condition || 'TRUE');
+const check = checks[cond] || (not[cond] && (() => !checks[not[cond]]()));
+if (!check) throw new Error('Filter condition ' + cond + ' is not supported by the converter');
+if (check() === ${endWhen}) return [];
+return [{ json: { $return_value: null } }];` }, type: "n8n-nodes-base.code", typeVersion: 2, kind: "code" });
+  ACTIONS["filter-continue-based-on-condition"] = filterAction(false);
+  ACTIONS["filter-end-based-on-condition"] = filterAction(true);
+
   function recordJs(record, ctx) {
     const r = lv(record);
     if (typeof r === "string") return `((v) => { try { return typeof v === 'string' ? JSON.parse(v) : v; } catch (e) { return v; } })(${valueToJs(r, ctx)})`;

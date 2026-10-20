@@ -29,7 +29,7 @@ Todo corre en el navegador: tu export nunca sale de tu computadora. Este repo ti
 
 **Pipedream** (entrada: el export del proyecto o una carpeta de GitHub Sync)
 - Los pasos de código Node.js pasan a nodos Code, incluyendo `steps.X.$return_value`, `$.export`, `$.flow.exit`, `$.respond` y `axios` de `@pipedream/platform`.
-- Disparadores HTTP, webhook y programados, esperas, respuestas HTTP y data stores.
+- Disparadores HTTP, webhook y programados, esperas, filtros (seguir o terminar según una condición), respuestas HTTP y data stores.
 - Las acciones comunes de apps pasan a nodos HTTP Request con la credencial de n8n que corresponde: Google Sheets, Gmail, Slack, Airtable, OpenAI, Telegram, Discord, GitHub, Outlook, Teams, Google Calendar, SendGrid, Postgres, Supabase, Twilio, Snowflake.
 
 Cada conversión trae una lista de lo que queda por hacer a mano (cuentas para reconectar, variables para crear).
@@ -40,7 +40,7 @@ Cada conversión trae una lista de lo que queda por hacer a mano (cuentas para r
 
 - Agent Builder: 196 exports reales que la gente publicó en GitHub → 196 flujos (437 agentes). Todos pasan el validador oficial de flujos de n8n e importan.
 - Flowise: los 51 templates del marketplace de Flowise → 55 flujos. Todos pasan el validador e importan; los patrones principales se corrieron en vivo en n8n.
-- Pipedream: 52 flujos públicos de GitHub Sync importan sin errores; 317 de 318 pasos de código compilan (el que falta ya está roto en el original).
+- Pipedream: 75 flujos públicos de GitHub Sync importan sin errores; 437 de 438 pasos de código compilan (el que falta ya está roto en el original).
 
 ## Correrlo en tu computadora
 

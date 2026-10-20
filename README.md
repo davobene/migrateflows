@@ -29,7 +29,7 @@ Everything runs in the browser: your export never leaves your computer. This rep
 
 **Pipedream** (input: the project export or a GitHub Sync folder)
 - Node.js code steps become Code nodes, including `steps.X.$return_value`, `$.export`, `$.flow.exit`, `$.respond` and `axios` from `@pipedream/platform`.
-- HTTP, webhook and schedule triggers, delays, HTTP responses and data stores.
+- HTTP, webhook and schedule triggers, delays, filters (continue or end based on a condition), HTTP responses and data stores.
 - Common app actions become HTTP Request nodes with the matching n8n credential: Google Sheets, Gmail, Slack, Airtable, OpenAI, Telegram, Discord, GitHub, Outlook, Teams, Google Calendar, SendGrid, Postgres, Supabase, Twilio, Snowflake.
 
 Every conversion comes with a checklist of what is left to do by hand (credentials to reconnect, variables to create).
@@ -40,7 +40,7 @@ Every conversion comes with a checklist of what is left to do by hand (credentia
 
 - Agent Builder: 196 real exports people published on GitHub → 196 workflows (437 agents). All pass n8n's own workflow validator and import.
 - Flowise: the 51 Flowise marketplace templates → 55 workflows. All pass the validator and import; the main patterns were run live in n8n.
-- Pipedream: 52 public GitHub Sync workflows import without errors; 317 of 318 code steps compile (the remaining one is broken in the original).
+- Pipedream: 75 public GitHub Sync workflows import without errors; 437 of 438 code steps compile (the remaining one is broken in the original).
 
 ## Run it locally
 
